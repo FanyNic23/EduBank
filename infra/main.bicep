@@ -94,6 +94,10 @@ resource app 'Microsoft.Web/sites@2023-12-01' = {
           value: '8080'
         }
         {
+          name: 'WEBSITES_CONTAINER_START_TIME_LIMIT'
+          value: '1800'
+        }
+        {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Production'
         }

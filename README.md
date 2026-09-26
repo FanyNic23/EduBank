@@ -72,3 +72,17 @@ El workflow `.github/workflows/deploy-azure.yml` requiere estos secrets del repo
 
 La cadena `ConnectionStrings__cadenaSQL` se configura en App Service, nunca en GitHub ni en el `Dockerfile`.
 Para un entorno productivo se recomienda sustituir las credenciales administrativas de ACR por OIDC y permisos `AcrPush` asignados al service principal.
+
+## Estado del despliegue Azure
+
+El proyecto fue desplegado manualmente y validado correctamente en Azure:
+
+- Aplicacion: `Azure App Service for Containers`.
+- Contenedor: imagen Docker .NET 8 publicada en Azure Container Registry.
+- Base de datos: `Azure SQL Database` con el esquema de `Scripts/DATABASE1.sql`.
+- Region: `chilecentral`.
+- Grupo de recursos: `rg-edubank-chile`.
+- URL: https://edubankfany26-app.azurewebsites.net
+- Validacion: App Service en estado `Running`, respuesta HTTP 200 y registro de usuario probado.
+
+El despliegue manual es el estado funcional de referencia. La automatizacion mediante GitHub Actions esta preparada en `.github/workflows/deploy-azure.yml`, pero requiere configurar sus secrets en GitHub. No se deben publicar contrasenas, tokens ni credenciales de Azure en el repositorio.

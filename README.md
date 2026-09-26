@@ -48,10 +48,10 @@ Abrir `http://localhost:8080`.
 
 ### Crear la infraestructura
 
-Instalar Azure CLI y Bicep, iniciar sesion con `az login` y crear un grupo de recursos. El nombre debe ser globalmente unico porque se usa para ACR, SQL Server y App Service.
+Instalar Azure CLI y Bicep, iniciar sesion con `az login` y crear un grupo de recursos en una region permitida por la suscripcion. El nombre debe ser globalmente unico porque se usa para ACR, SQL Server y App Service.
 
 ```powershell
-az group create --name rg-edubank --location eastus
+az group create --name rg-edubank --location chilecentral
 az deployment group create `
 	--resource-group rg-edubank `
 	--template-file infra/main.bicep `

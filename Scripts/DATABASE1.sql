@@ -15,8 +15,6 @@ IF OBJECT_ID('Usuarios', 'U') IS NOT NULL DROP TABLE Usuarios;
 GO
 
 
-select * from Usuarios
-
 -- =============================================
 -- TABLA: Usuarios (CORREGIDA)
 -- =============================================
@@ -38,7 +36,7 @@ CREATE TABLE Cuentas (
     CuentaId INT IDENTITY(1,1) PRIMARY KEY,
     UsuarioId INT NOT NULL,
     Nombre NVARCHAR(100) NOT NULL,
-    Tipo NVARCHAR(50) NOT NULL CHECK (Tipo IN ('Efectivo', 'Bancaria', 'Tarjeta', 'Inversión')),
+    Tipo NVARCHAR(50) NOT NULL CHECK (Tipo IN ('Efectivo', 'Bancaria', 'Tarjeta', 'Inversiï¿½n')),
     Saldo DECIMAL(18,2) NOT NULL DEFAULT 0,
     Moneda NVARCHAR(10) NOT NULL DEFAULT 'PEN',
     Activo BIT NOT NULL DEFAULT 1,
@@ -48,14 +46,14 @@ CREATE TABLE Cuentas (
 GO
 
 -- =============================================
--- TABLA: Categorias (¡CORRECCIÓN CRÍTICA!)
+-- TABLA: Categorias (ï¿½CORRECCIï¿½N CRï¿½TICA!)
 -- =============================================
 CREATE TABLE Categorias (
     CategoriaId INT IDENTITY(1,1) PRIMARY KEY,
-    UsuarioId INT NOT NULL,  -- Cambiado de NULL a NOT NULL (según diagrama)
+    UsuarioId INT NOT NULL,  -- Cambiado de NULL a NOT NULL (segï¿½n diagrama)
     Nombre NVARCHAR(100) NOT NULL,
     Descripcion NVARCHAR(MAX) NULL,
-    Tipo CHAR(1) NOT NULL CHECK (Tipo IN ('I', 'G')),  -- ¡CORREGIDO! 'I','G' no 'Ingreso','Gasto'
+    Tipo CHAR(1) NOT NULL CHECK (Tipo IN ('I', 'G')),  -- ï¿½CORREGIDO! 'I','G' no 'Ingreso','Gasto'
     Icono NVARCHAR(50) NULL,
     Color NVARCHAR(20) NULL,
     Activo BIT NOT NULL DEFAULT 1,
@@ -65,11 +63,11 @@ CREATE TABLE Categorias (
 GO
 
 -- =============================================
--- TABLA: Movimientos (CORREGIDA - relación con Cuentas)
+-- TABLA: Movimientos (CORREGIDA - relaciï¿½n con Cuentas)
 -- =============================================
 CREATE TABLE Movimientos (
     MovimientoId BIGINT IDENTITY(1,1) PRIMARY KEY,
-    CuentaId INT NOT NULL,      -- ¡AGREGADO! Relación con Cuentas
+    CuentaId INT NOT NULL,      -- ï¿½AGREGADO! Relaciï¿½n con Cuentas
     CategoriaId INT NOT NULL,
     Tipo CHAR(1) NOT NULL CHECK (Tipo IN ('I', 'G')),
     FechaOperacion DATETIME2 NOT NULL,

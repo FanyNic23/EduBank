@@ -1,0 +1,278 @@
+﻿﻿@using Azure.Identity
+@using EduBank.Models.ViewModel
+@model EduBank.Models.ViewModel.VMHome;
+@{
+
+    string iniciales = "";
+    if (User.Identity.IsAuthenticated)
+    {
+        string username = User.Identity.Name;
+        var palabras = username.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        foreach (var palabra in palabras)
+        {
+            iniciales += palabra[0];
+        }
+        if (iniciales.Length > 2)
+        {
+            iniciales = iniciales.Substring(0, 2).ToUpper();
+        }
+        else
+        {
+            iniciales = iniciales.ToUpper();
+        }
+    }
+}
+@section styles {
+
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+
+    <link href="css/home.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+}
+
+<!-- Begin Page Content -->
+<div class="sy-dashboard-container">
+    <header class="sy-dashboard-header">
+        <h1>Dashboard Financiero</h1>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="sy-user-info">
+                <div class="sy-user-avatar">@iniciales</div>
+                <div>
+                    <div style="font-weight: 600;">@User.Identity.Name</div>
+                    <div style="font-size: 14px; color: var(--sy-text-secondary);">Administrador</div>
+                </div>
+
+            </div>
+        }
+    </header>
+
+    <div class="sy-stats-grid">
+        <div class="sy-stat-card sy-income">
+            <div class="sy-stat-content">
+                <div class="sy-stat-title">Ingresos Mensuales</div>
+                <div class="sy-stat-value">S/. @Model.IngresoM.Monto</div>
+                <div class="sy-stat-change" style="color: var(--sy-success);">
+                    <i class="fas fa-arrow-up"></i> @Model.IngresoM.Porcentaje % vs mes anterior
+                </div>
+            </div>
+            <div class="sy-stat-icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+        </div>
+
+        <div class="sy-stat-card sy-expenses">
+            <div class="sy-stat-content">
+                <div class="sy-stat-title">Gastos Mensuales</div>
+                <div class="sy-stat-value">S/. @Model.GastoM.Monto </div>
+                <div class="sy-stat-change" style="color: var(--sy-warning);">
+                    <i class="fas fa-arrow-up"></i> @Model.GastoM.Porcentaje % vs mes anterior
+                </div>
+            </div>
+            <div class="sy-stat-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </div>
+
+        <div class="sy-stat-card sy-reminders">
+            <div class="sy-stat-content">
+                <div class="sy-stat-title">Recordatorios Pendientes</div>
+                <div class="sy-stat-value">@Model.Recor.RecordatoriosPendientes</div>
+                <div class="sy-stat-change" style="color: var(--sy-info);">
+                    <i class="fas fa-bell"></i>@Model.Recor.RecordatoriosRecientes nuevos
+                </div>
+            </div>
+            <div class="sy-stat-icon">
+                <i class="fas fa-comments"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="sy-charts-grid">
+        <div class="sy-chart-card">
+            <div class="sy-chart-header">
+                <div class="sy-chart-title">Resumen de Gastos</div>
+
+            </div>
+            <div class="sy-chart-container">
+                <canvas id="sy-expensesChart"></canvas>
+            </div>
+        </div>
+
+        <div class="sy-chart-card">
+            <div class="sy-chart-header">
+                <div class="sy-chart-title">Fuentes de Ingresos</div>
+
+            </div>
+            <div class="sy-chart-container">
+                <canvas id="sy-incomeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="sy-progress-section">
+        <div class="sy-progress-card">
+            <div class="sy-progress-title">
+                <i class="fas fa-chart-pie"></i>
+                Gastos y Ingresos Totales
+            </div>
+            <div class="sy-progress-item">
+                <div class="sy-progress-label">
+                    <span>Gastos</span>
+                    <span> @Model.GastosIngresos.Gastos %</span>
+                </div>
+                <div class="sy-progress-bar">
+                    <div class="sy-progress-fill sy-expenses" style="width: @Model.GastosIngresos.Gastos%"></div>
+                </div>
+            </div>
+            <div class="sy-progress-item">
+                <div class="sy-progress-label">
+                    <span>Ingresos</span>
+                    <span>@Model.GastosIngresos.Ingresos%</span>
+                </div>
+                <div class="sy-progress-bar">
+                    <div class="sy-progress-fill sy-income" style="width: @Model.GastosIngresos.Ingresos%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sy-progress-card">
+            <div class="sy-progress-title">
+                <i class="fas fa-bell"></i>
+                Recordatorios
+            </div>
+            <ul class="sy-reminders-list">
+                @foreach (var data in Model.Recor.recordatorio)
+                {
+                    <li class="sy-reminder-item">
+                        <div class="sy-reminder-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="sy-reminder-text">
+                            <div class="sy-reminder-title">@data.Nombre  </div>
+                            <div class="sy-reminder-description"> @data.Comentario</div>
+                            <div class="sy-reminder-date">
+                                <i class="far fa-clock"></i>Vence  @data.FechaFin
+                            </div>
+                        </div>
+                    </li>
+                }
+
+            </ul>
+        </div>
+    </div>
+
+    <footer class="sy-footer">
+        <p>Dashboard Financiero &copy; 2023 - Todos los derechos reservados</p>
+    </footer>
+</div>
+@section scripts {
+    <!-- Bootstrap core JavaScript-->
+    <script>
+        // Inicializar gráficos cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function () {
+            // Gráfico de gastos (área)
+            const expensesCtx = document.getElementById('sy-expensesChart').getContext('2d');
+            const expensesData = @Html.Raw(Json.Serialize(Model.Graficos.ResumenGastos));
+            const expensesChart = new Chart(expensesCtx, {
+                type: 'line',
+                data: {
+                    labels: expensesData.map(d => d.mes),
+                    datasets: [{
+                        label: 'Gastos',
+                        data: expensesData.map(d => d.total),
+                        backgroundColor: 'rgba(255, 107, 139, 0.1)',
+                        borderColor: '#FF6B8B',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#FF6B8B',
+                        pointBorderColor: '#FFFFFF',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    return 'S/.' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de ingresos (dona)
+            const incomeCtx = document.getElementById('sy-incomeChart').getContext('2d');
+            const incomeData = @Html.Raw(Json.Serialize(Model.Graficos.ResumenIngresos));
+            const incomeChart = new Chart(incomeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: incomeData.map(d => d.categoria),
+                    datasets: [{
+                        data: incomeData.map(d => d.total),
+                        backgroundColor: [
+                            '#6C63FF',
+                            '#00D4AA',
+                            '#FF6B8B',
+                            '#36C5F0'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Animación de las barras de progreso
+            setTimeout(() => {
+                document.querySelectorAll('.sy-progress-fill').forEach(fill => {
+                    const width = fill.style.width;
+                    fill.style.width = '0';
+                    setTimeout(() => {
+                        fill.style.width = width;
+                    }, 300);
+                });
+            }, 500);
+        });
+    </script>
+}

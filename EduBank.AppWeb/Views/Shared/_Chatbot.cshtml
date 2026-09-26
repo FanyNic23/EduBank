@@ -1,0 +1,1245 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduBank Chatbot</title>
+    <!-- Linking Google fonts for icons-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0" />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== ESTILOS DEL CHATBOT EDUBAK ===== */
+        #chatbot-toggler {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 22px rgba(15,23,42,0.15);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+            #chatbot-toggler:hover {
+                background: #0b5ed7;
+                transform: translateY(-3px) scale(1.05);
+                box-shadow: 0 12px 30px rgba(15,23,42,0.2);
+            }
+
+            #chatbot-toggler span:last-child {
+                display: none;
+            }
+
+        .chatbot-popup {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 520px;
+            z-index: 999;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(15,23,42,0.15);
+            background: #ffffff;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+
+        body.show-chatbot .chatbot-popup {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        body.show-chatbot #chatbot-toggler span:first-child {
+            display: none;
+        }
+
+        body.show-chatbot #chatbot-toggler span:last-child {
+            display: block;
+        }
+
+        /* Chat Header */
+        .chat-header {
+            flex: 0 1 70px;
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+            color: #fff;
+            text-align: left;
+            padding: 16px 20px 16px 70px;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 2px 10px rgba(13, 110, 253, 0.2);
+        }
+
+        .header-info h1 {
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+
+        .header-info h2 {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            font-weight: 400;
+            margin: 0;
+            padding: 0;
+        }
+
+        .chatbot-avatar {
+            position: absolute;
+            z-index: 1;
+            top: 15px;
+            left: 20px;
+            border-radius: 14px;
+            width: 40px;
+            height: 40px;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+            .chatbot-avatar svg {
+                width: 22px;
+                height: 22px;
+                fill: white;
+            }
+
+        #close-chatbot {
+            position: absolute;
+            top: 22px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            #close-chatbot:hover {
+                background: rgba(255, 255, 255, 0.3);
+                color: white;
+                transform: rotate(90deg);
+            }
+
+        /* Chat Body */
+        .chat-body {
+            flex: 1 1 auto;
+            color: #374151;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            padding: 0;
+            background: #f8fafc;
+        }
+
+        .messages-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            clear: both;
+            float: left;
+            padding: 12px 16px;
+            border-radius: 18px 18px 18px 6px;
+            background: white;
+            margin: 10px 0;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-left: 50px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            max-width: 80%;
+            animation: bounce 0.4s ease both;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+            .message::before {
+                content: '';
+                position: absolute;
+                bottom: -6px;
+                border-top: 6px solid white;
+                left: 0;
+                border-right: 7px solid transparent;
+            }
+
+        .bot-avatar {
+            position: absolute;
+            z-index: 1;
+            bottom: -12px;
+            left: -50px;
+            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+
+            .bot-avatar svg {
+                width: 18px;
+                height: 18px;
+                fill: white;
+            }
+
+        .user-message {
+            float: right;
+            color: white;
+            text-align: right;
+            background: linear-gradient(135deg, #198754 0%, #157347 100%);
+            border-radius: 18px 18px 6px 18px;
+            margin-right: 0;
+            margin-left: 0;
+            box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+            border: none;
+        }
+
+            .user-message::before {
+                left: auto;
+                right: 0;
+                border-right: none;
+                border-left: 5px solid transparent;
+                border-top: 4px solid #157347;
+                bottom: -4px;
+            }
+
+        .message.new {
+            transform: scale(0);
+            transform-origin: 0 0;
+            animation: bounce 0.4s ease both;
+        }
+
+        /* Thinking indicator */
+        .thinking {
+            background: white;
+        }
+
+        .thinking-indicator {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #0d6efd;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+            .dot:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            .dot:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+
+        @@keyframes pulse {
+            0%, 100% {
+                opacity: 0.4;
+                transform: translateY(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateY(-4px);
+            }
+        }
+
+        /* Chat Footer */
+        .chat-footer {
+            flex: 0 1 60px;
+            width: 100%;
+            background: white;
+            padding: 15px 20px;
+            position: relative;
+            border-radius: 0 0 16px 16px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .chat-form {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            outline: none !important;
+            resize: none;
+            color: #374151;
+            font-size: 13px;
+            height: 40px;
+            max-height: 100px;
+            margin: 0;
+            padding: 10px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+            .message-input:focus {
+                background: white;
+                border-color: #0d6efd;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+            }
+
+        textarea.message-input::placeholder {
+            color: #6c757d;
+        }
+
+        #send-message {
+            background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+
+            #send-message:hover {
+                background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 18px rgba(13, 110, 253, 0.4);
+            }
+
+        .error {
+            color: #dc3545;
+            font-style: italic;
+            background: #fff1f2;
+            border: 1px solid rgba(220, 53, 69, 0.1);
+        }
+
+        /* Animations */
+        @@keyframes bounce {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Scrollbar styling */
+        .messages-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+        }
+
+        .messages-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+        }
+
+            .messages-content::-webkit-scrollbar-thumb:hover {
+                background: rgba(0, 0, 0, 0.25);
+            }
+
+        /* Responsive */
+        @@media (max-width: 500px) {
+            .chatbot-popup {
+                width: calc(100vw - 40px);
+                height: 70vh;
+                right: 20px;
+                bottom: 90px;
+            }
+
+            #chatbot-toggler {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+        }
+
+        /* Estilos para mensajes de bienvenida y contenido */
+        .welcome-message {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border: 1px solid rgba(79, 70, 229, 0.1);
+            color: #374151;
+        }
+
+            .welcome-message::before {
+                border-top-color: #eef2ff;
+            }
+
+        /* Mejoras de tipografía */
+        .message-text {
+            font-family: inherit;
+            line-height: 1.5;
+        }
+
+        .bot-message .message-text {
+            color: #374151;
+        }
+
+        .user-message .message-text {
+            color: white;
+        }
+    </style>
+
+</head>
+<body>
+    <button id="chatbot-toggler">
+        <span class="material-symbols-rounded">mode_comment</span>
+        <span class="material-symbols-rounded">close</span>
+    </button>
+
+    <div class="chatbot-popup">
+        <!--Chatbot Header-->
+        <div class="chat-header">
+            <div class="chatbot-avatar">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+                    <path d="M738.3 287.6H285.7c-59 0-106.8 47.8-106.8 106.8v303.1c0 59 47.8 106.8 106.8 106.8h81.5v111.1c0 .7.8 1.1 1.4.7l166.9-110.6 41.8-.8h117.4l43.6-.4c59 0 106.8-47.8 106.8-106.8V394.5c0-59-47.8-106.9-106.8-106.9zM351.7 448.2c0-29.5 23.9-53.5 53.5-53.5s53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5-53.5-23.9-53.5-53.5zm157.9 267.1c-67.8 0-123.8-47.5-132.3-109h264.6c-8.6 61.5-64.5 109-132.3 109zm110-213.7c-29.5 0-53.5-23.9-53.5-53.5s23.9-53.5 53.5-53.5 53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5zM867.2 644.5V453.1h26.5c19.4 0 35.1 15.7 35.1 35.1v121.1c0 19.4-15.7 35.1-35.1 35.1h-26.5zM95.2 609.4V488.2c0-19.4 15.7-35.1 35.1-35.1h26.5v191.3h-26.5c-19.4 0-35.1-15.7-35.1-35.1zM561.5 149.6c0 23.4-15.6 43.3-36.9 49.7v44.9h-30v-44.9c-21.4-6.5-36.9-26.3-36.9-49.7 0-28.6 23.3-51.9 51.9-51.9s51.9 23.3 51.9 51.9z"></path>
+                </svg>
+            </div>
+            <div class="header-info">
+                <h1>EduBank Assistant</h1>
+                <h2>Asistente financiero personal</h2>
+            </div>
+            <button id="close-chatbot" class="material-symbols-rounded">keyboard_arrow_down</button>
+        </div>
+
+        <!--Chatbot Body-->
+        <div class="chat-body">
+            <div class="messages-content">
+                <div class="message bot-message new">
+                    <div class="bot-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+                            <path d="M738.3 287.6H285.7c-59 0-106.8 47.8-106.8 106.8v303.1c0 59 47.8 106.8 106.8 106.8h81.5v111.1c0 .7.8 1.1 1.4.7l166.9-110.6 41.8-.8h117.4l43.6-.4c59 0 106.8-47.8 106.8-106.8V394.5c0-59-47.8-106.9-106.8-106.9zM351.7 448.2c0-29.5 23.9-53.5 53.5-53.5s53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5-53.5-23.9-53.5-53.5zm157.9 267.1c-67.8 0-123.8-47.5-132.3-109h264.6c-8.6 61.5-64.5 109-132.3 109zm110-213.7c-29.5 0-53.5-23.9-53.5-53.5s23.9-53.5 53.5-53.5 53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5zM867.2 644.5V453.1h26.5c19.4 0 35.1 15.7 35.1 35.1v121.1c0 19.4-15.7 35.1-35.1 35.1h-26.5zM95.2 609.4V488.2c0-19.4 15.7-35.1 35.1-35.1h26.5v191.3h-26.5c-19.4 0-35.1-15.7-35.1-35.1zM561.5 149.6c0 23.4-15.6 43.3-36.9 49.7v44.9h-30v-44.9c-21.4-6.5-36.9-26.3-36.9-49.7 0-28.6 23.3-51.9 51.9-51.9s51.9 23.3 51.9 51.9z"></path>
+                        </svg>
+                    </div>
+                    <div class="message-text">
+                        ¡Hola! 👋<br>
+                        Soy tu asistente de EduBank. Puedo ayudarte con:
+                        <br>• Consultas sobre tus movimientos
+                        <br>• Gestión de categorías
+                        <br>• Análisis de gastos
+                        <br>• Programación de pagos
+                        <br><br>¿En qué puedo ayudarte hoy?
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Chatbot Footer-->
+        <div class="chat-footer">
+            <form action="#" class="chat-form">
+                <textarea placeholder="Escribe tu mensaje..." class="message-input" required></textarea>
+                <button type="submit" id="send-message" class="material-symbols-rounded">arrow_upward</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+            // Elementos del DOM
+            const messagesContent = document.querySelector(".messages-content");
+            const messageInput = document.querySelector(".message-input");
+            const sendMessageButton = document.querySelector("#send-message");
+            const chatbotToggler = document.querySelector("#chatbot-toggler");
+            const closeChatbot = document.querySelector("#close-chatbot");
+
+            // Configuración de OpenRouter
+            const OPENROUTER_API_KEY = "";
+            const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
+            const SITE_URL = window.location.origin;
+            const SITE_NAME = "EduBank Chatbot";
+
+            // Cache de datos para evitar llamadas repetidas
+            let cacheDatos = {
+                usuario: null,
+                movimientos: null,
+                timestamp: null,
+                duracionCache: 30000 // 30 segundos
+            };
+
+            // Historial de conversación
+            let conversationHistory = [
+                {
+                    role: "system",
+                    content: `Eres un asistente especializado en finanzas personales para EduBank.
+
+            INSTRUCCIONES CRÍTICAS:
+            - Para análisis (mayor gasto, mayor ingreso, promedios, tendencias): Usa [CONTEXTO_ANALITICO] que contiene cálculos específicos
+            - Para listas completas (categorías): Muestra TODOS los elementos, no solo algunos
+            - Los datos son EN TIEMPO REAL desde la base de datos de EduBank
+            - Si el usuario pregunta por datos recientes, confirma que son actualizados al momento
+            - Cuando hables de gastos grandes, ofrece ayuda adicional de forma natural
+
+            RESPUESTAS ESPERADAS:
+            • "categorías de gastos" → Lista COMPLETA de todas las categorías de gastos activas
+            • "mayor gasto" → Análisis del movimiento más alto con detalles específicos
+            • "mayor ingreso" → Análisis del ingreso más alto con detalles específicos
+            • "datos actuales" → Confirmar que son datos en tiempo real
+
+            NUNCA inventes información. Si no hay datos, di la verdad.`
+                }
+            ];
+
+            // Datos del usuario
+            const userData = {
+                message: null
+            };
+
+            // ========== FUNCIONES DE UTILIDAD ==========
+
+            // Scroll al último mensaje
+            const scrollToLatestMessage = () => {
+                messagesContent.scrollTo({ top: messagesContent.scrollHeight, behavior: "smooth" });
+            };
+
+            // Crear elemento de mensaje
+            const createMessageElement = (content, isUser = false) => {
+                const messageDiv = document.createElement("div");
+                messageDiv.classList.add("message", "new");
+
+                if (isUser) {
+                    messageDiv.classList.add("user-message");
+                    messageDiv.innerHTML = `<div class="message-text">${content}</div>`;
+                } else {
+                    messageDiv.classList.add("bot-message");
+                    messageDiv.innerHTML = `
+                        <div class="bot-avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+                                <path d="M738.3 287.6H285.7c-59 0-106.8 47.8-106.8 106.8v303.1c0 59 47.8 106.8 106.8 106.8h81.5v111.1c0 .7.8 1.1 1.4.7l166.9-110.6 41.8-.8h117.4l43.6-.4c59 0 106.8-47.8 106.8-106.8V394.5c0-59-47.8-106.9-106.8-106.9zM351.7 448.2c0-29.5 23.9-53.5 53.5-53.5s53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5-53.5-23.9-53.5-53.5zm157.9 267.1c-67.8 0-123.8-47.5-132.3-109h264.6c-8.6 61.5-64.5 109-132.3 109zm110-213.7c-29.5 0-53.5-23.9-53.5-53.5s23.9-53.5 53.5-53.5 53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5zM867.2 644.5V453.1h26.5c19.4 0 35.1 15.7 35.1 35.1v121.1c0 19.4-15.7 35.1-35.1 35.1h-26.5zM95.2 609.4V488.2c0-19.4 15.7-35.1 35.1-35.1h26.5v191.3h-26.5c-19.4 0-35.1-15.7-35.1-35.1zM561.5 149.6c0 23.4-15.6 43.3-36.9 49.7v44.9h-30v-44.9c-21.4-6.5-36.9-26.3-36.9-49.7 0-28.6 23.3-51.9 51.9-51.9s51.9 23.3 51.9 51.9z"></path>
+                            </svg>
+                        </div>
+                        <div class="message-text">${content}</div>
+                    `;
+                }
+
+                return messageDiv;
+            };
+
+            // Crear elemento de "pensando"
+            const createThinkingElement = () => {
+                const thinkingDiv = document.createElement("div");
+                thinkingDiv.classList.add("message", "bot-message", "thinking");
+                thinkingDiv.innerHTML = `
+                    <div class="bot-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+                            <path d="M738.3 287.6H285.7c-59 0-106.8 47.8-106.8 106.8v303.1c0 59 47.8 106.8 106.8 106.8h81.5v111.1c0 .7.8 1.1 1.4.7l166.9-110.6 41.8-.8h117.4l43.6-.4c59 0 106.8-47.8 106.8-106.8V394.5c0-59-47.8-106.9-106.8-106.9zM351.7 448.2c0-29.5 23.9-53.5 53.5-53.5s53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5-53.5-23.9-53.5-53.5zm157.9 267.1c-67.8 0-123.8-47.5-132.3-109h264.6c-8.6 61.5-64.5 109-132.3 109zm110-213.7c-29.5 0-53.5-23.9-53.5-53.5s23.9-53.5 53.5-53.5 53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5zM867.2 644.5V453.1h26.5c19.4 0 35.1 15.7 35.1 35.1v121.1c0 19.4-15.7 35.1-35.1 35.1h-26.5zM95.2 609.4V488.2c0-19.4 15.7-35.1 35.1-35.1h26.5v191.3h-26.5c-19.4 0-35.1-15.7-35.1-35.1zM561.5 149.6c0 23.4-15.6 43.3-36.9 49.7v44.9h-30v-44.9c-21.4-6.5-36.9-26.3-36.9-49.7 0-28.6 23.3-51.9 51.9-51.9s51.9 23.3 51.9 51.9z"></path>
+                        </svg>
+                    </div>
+                    <div class="message-text">
+                        <div class="thinking-indicator">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                `;
+
+                return thinkingDiv;
+            };
+
+            // ========== SISTEMA DE BOTONES INTERACTIVOS ==========
+
+            // Función para crear botones de seguimiento
+            const crearBotonesSeguimiento = (categoriaGasto, montoGasto) => {
+                const botonesHTML = `
+                    <div class="botones-seguimiento" data-categoria="${categoriaGasto}" data-monto="${montoGasto}">
+                        <div class="pregunta-seguimiento">¿Te gustaría recibir consejos personalizados para optimizar tus gastos en <strong>${categoriaGasto}</strong>?</div>
+                        <div class="botones-container">
+                            <button class="btn-seguimiento btn-si" data-respuesta="si">
+                                ✅ Sí, dame consejos
+                            </button>
+                            <button class="btn-seguimiento btn-no" data-respuesta="no">
+                                ❌ No, gracias
+                            </button>
+                        </div>
+                    </div>
+                `;
+                return botonesHTML;
+            };
+
+            // Función para manejar respuestas de botones
+            const manejarRespuestaBotones = async (respuesta, categoria, monto) => {
+                let mensajeRespuesta = '';
+
+                switch(respuesta) {
+                    case 'si':
+                        // Mostrar indicador de "pensando" para consejos
+                        const thinkingElement = createThinkingElement();
+                        messagesContent.appendChild(thinkingElement);
+                        scrollToLatestMessage();
+
+                        // Generar consejos personalizados con IA
+                        mensajeRespuesta = await generarConsejosPersonalizados(categoria, monto);
+
+                        // Remover el indicador de pensamiento
+                        thinkingElement.remove();
+                        break;
+                    case 'no':
+                        mensajeRespuesta = 'De acuerdo. Si cambias de opinión, estaré aquí para ayudarte con consejos de ahorro. 💰';
+                        break;
+                }
+
+                return mensajeRespuesta;
+            };
+
+            // Función para generar consejos personalizados con IA
+            const generarConsejosPersonalizados = async (categoria, monto) => {
+                try {
+                    const datosUsuario = await obtenerDatosUsuarioConCache();
+                    const movimientos = await obtenerMovimientosConCache('mes');
+
+                    // Crear contexto específico para consejos
+                    const contextoConsejos = `
+        CONTEXTO PARA CONSEJOS DE AHORRO:
+        - Categoría a analizar: ${categoria}
+        - Monto del gasto más alto: $${monto}
+        - Total de gastos del mes: $${datosUsuario?.totalGastos || 'No disponible'}
+        - Total de ingresos del mes: $${datosUsuario?.totalIngresos || 'No disponible'}
+        - Saldo total actual: $${parseFloat(datosUsuario?.saldoTotal || 0).toFixed(2)}
+
+        INSTRUCCIONES:
+        Proporciona 3-4 consejos ESPECÍFICOS y PERSONALIZADOS para optimizar gastos en ${categoria}.
+        Los consejos deben ser:
+        • Prácticos y accionables
+        • Basados en el monto específico ($${monto})
+        • Adaptados a la categoría ${categoria}
+        • Realistas y fáciles de implementar
+        • Enfocados en ahorro sostenible
+
+        Formato: Lista concisa con emojis, máximo 500 caracteres.`;
+
+                    // Hacer petición a OpenRouter para consejos
+                    const response = await fetch(OPENROUTER_API_URL, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                            "HTTP-Referer": SITE_URL,
+                            "X-Title": SITE_NAME,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            "model": "google/gemini-2.5-flash-lite",
+                            "messages": [
+                                {
+                                    role: "system",
+                                    content: "Eres un experto en finanzas personales y ahorro. Proporciona consejos prácticos, específicos y personalizados para optimizar gastos."
+                                },
+                                {
+                                    role: "user",
+                                    content: contextoConsejos
+                                }
+                            ],
+                            "temperature": 0.8,
+                            "max_tokens": 500
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        return `💡 **Consejos personalizados para ${categoria}:**\n\n${data.choices[0].message.content}\n\n¿Te gustaría profundizar en alguno de estos consejos?`;
+                    } else {
+                        throw new Error("Respuesta inesperada de la API");
+                    }
+
+                } catch (error) {
+                    console.error("Error generando consejos:", error);
+                    return `💡 **Consejos generales para ${categoria}:**
+        • Analiza si este gasto es esencial o puede optimizarse
+        • Busca alternativas más económicas sin sacrificar calidad
+        • Considera si puedes espaciar la frecuencia de este gasto
+        • Establece un presupuesto mensual específico para esta categoría
+
+        ¿Te gustaría que analice más a fondo tus patrones de gasto en ${categoria}?`;
+                }
+            };
+
+            // Agregar event listeners a los botones
+            const agregarEventListenersBotones = () => {
+                const botones = document.querySelectorAll('.btn-seguimiento');
+
+                botones.forEach(boton => {
+                    boton.addEventListener('click', async function() {
+                        const respuesta = this.getAttribute('data-respuesta');
+                        const botonesContainer = this.closest('.botones-seguimiento');
+                        const categoria = botonesContainer.getAttribute('data-categoria');
+                        const monto = botonesContainer.getAttribute('data-monto');
+
+                        // Deshabilitar botones mientras se procesa
+                        botones.forEach(btn => btn.disabled = true);
+
+                        // Obtener mensaje de respuesta
+                        const mensajeRespuesta = await manejarRespuestaBotones(respuesta, categoria, monto);
+
+                        // Crear y mostrar mensaje del bot
+                        const respuestaElement = createMessageElement(mensajeRespuesta, false);
+                        messagesContent.appendChild(respuestaElement);
+                        scrollToLatestMessage();
+
+                        // Remover los botones después de la selección
+                        botonesContainer.remove();
+
+                        // Agregar al historial de conversación
+                        conversationHistory.push({
+                            role: "assistant",
+                            content: mensajeRespuesta
+                        });
+                    });
+                });
+            };
+
+            // ========== SISTEMA DE CACHE Y ACTUALIZACIÓN ==========
+
+            // Verificar si el cache está expirado
+            const isCacheExpirado = () => {
+                if (!cacheDatos.timestamp) return true;
+                return (Date.now() - cacheDatos.timestamp) > cacheDatos.duracionCache;
+            };
+
+            // Obtener datos con cache inteligente
+            const obtenerDatosUsuarioConCache = async (forzarActualizacion = false) => {
+                if (!forzarActualizacion && !isCacheExpirado() && cacheDatos.usuario) {
+                    return cacheDatos.usuario;
+                }
+
+                try {
+                    const response = await fetch('/Chatbot/ObtenerDatosUsuario');
+                    if (!response.ok) throw new Error('Error al obtener datos');
+                    const datos = await response.json();
+
+                    // Actualizar cache
+                    cacheDatos.usuario = datos;
+                    cacheDatos.timestamp = Date.now();
+
+                    return datos;
+                } catch (error) {
+                    console.error('Error:', error);
+                    return null;
+                }
+            };
+
+            // Obtener movimientos con cache
+            const obtenerMovimientosConCache = async (periodo = 'mes', forzarActualizacion = false) => {
+                if (!forzarActualizacion && !isCacheExpirado() && cacheDatos.movimientos) {
+                    return cacheDatos.movimientos;
+                }
+
+                try {
+                    const response = await fetch(`/Chatbot/ObtenerMovimientosPorPeriodo?periodo=${periodo}`);
+                    if (!response.ok) throw new Error('Error al obtener movimientos');
+                    const movimientos = await response.json();
+
+                    // Actualizar cache
+                    cacheDatos.movimientos = movimientos;
+                    cacheDatos.timestamp = Date.now();
+
+                    return movimientos;
+                } catch (error) {
+                    console.error('Error:', error);
+                    return null;
+                }
+            };
+
+            // ========== ANÁLISIS AVANZADO DE DATOS ==========
+
+            // Calcular mayor gasto
+            const calcularMayorGasto = (movimientos) => {
+                if (!movimientos || movimientos.length === 0) return null;
+
+                const gastos = movimientos.filter(m => m.tipo === 'G' || m.tipo === 'Egreso');
+                if (gastos.length === 0) return null;
+
+                const mayorGasto = gastos.reduce((max, movimiento) => {
+                    return parseFloat(movimiento.monto) > parseFloat(max.monto) ? movimiento : max;
+                }, gastos[0]);
+
+                return {
+                    monto: parseFloat(mayorGasto.monto).toFixed(2),
+                    categoria: mayorGasto.categoria || mayorGasto.CategoriaNombre || 'Sin categoría',
+                    cuenta: mayorGasto.cuenta || mayorGasto.CuentaNombre || 'Sin cuenta',
+                    fecha: mayorGasto.fechaOperacion ? mayorGasto.fechaOperacion.split('T')[0] : 'Fecha no disponible',
+                    comentario: mayorGasto.comentario || ''
+                };
+            };
+
+            // Calcular mayor ingreso
+            const calcularMayorIngreso = (movimientos) => {
+                if (!movimientos || movimientos.length === 0) return null;
+
+                const ingresos = movimientos.filter(m => m.tipo === 'I' || m.tipo === 'Ingreso');
+                if (ingresos.length === 0) return null;
+
+                const mayorIngreso = ingresos.reduce((max, movimiento) => {
+                    return parseFloat(movimiento.monto) > parseFloat(max.monto) ? movimiento : max;
+                }, ingresos[0]);
+
+                return {
+                    monto: parseFloat(mayorIngreso.monto).toFixed(2),
+                    categoria: mayorIngreso.categoria || mayorIngreso.CategoriaNombre || 'Sin categoría',
+                    cuenta: mayorIngreso.cuenta || mayorIngreso.CuentaNombre || 'Sin cuenta',
+                    fecha: mayorIngreso.fechaOperacion ? mayorIngreso.fechaOperacion.split('T')[0] : 'Fecha no disponible',
+                    comentario: mayorIngreso.comentario || ''
+                };
+            };
+
+            // Calcular promedios y estadísticas
+            const calcularEstadisticas = (movimientos) => {
+                if (!movimientos || movimientos.length === 0) return null;
+
+                const gastos = movimientos.filter(m => m.tipo === 'G' || m.tipo === 'Egreso');
+                const ingresos = movimientos.filter(m => m.tipo === 'I' || m.tipo === 'Ingreso');
+
+                const totalGastos = gastos.reduce((sum, m) => sum + parseFloat(m.monto), 0);
+                const totalIngresos = ingresos.reduce((sum, m) => sum + parseFloat(m.monto), 0);
+                const promedioGastos = gastos.length > 0 ? totalGastos / gastos.length : 0;
+                const promedioIngresos = ingresos.length > 0 ? totalIngresos / ingresos.length : 0;
+
+                // Agrupar por categoría
+                const gastosPorCategoria = {};
+                gastos.forEach(m => {
+                    const categoria = m.categoria || m.CategoriaNombre || 'Sin categoría';
+                    gastosPorCategoria[categoria] = (gastosPorCategoria[categoria] || 0) + parseFloat(m.monto);
+                });
+
+                const ingresosPorCategoria = {};
+                ingresos.forEach(m => {
+                    const categoria = m.categoria || m.CategoriaNombre || 'Sin categoría';
+                    ingresosPorCategoria[categoria] = (ingresosPorCategoria[categoria] || 0) + parseFloat(m.monto);
+                });
+
+                const categoriaMayorGasto = Object.keys(gastosPorCategoria).reduce((a, b) =>
+                    gastosPorCategoria[a] > gastosPorCategoria[b] ? a : b, '');
+
+                const categoriaMayorIngreso = Object.keys(ingresosPorCategoria).reduce((a, b) =>
+                    ingresosPorCategoria[a] > ingresosPorCategoria[b] ? a : b, '');
+
+                return {
+                    totalGastos: totalGastos.toFixed(2),
+                    totalIngresos: totalIngresos.toFixed(2),
+                    promedioGastos: promedioGastos.toFixed(2),
+                    promedioIngresos: promedioIngresos.toFixed(2),
+                    cantidadMovimientos: movimientos.length,
+                    cantidadGastos: gastos.length,
+                    cantidadIngresos: ingresos.length,
+                    categoriaMayorGasto: categoriaMayorGasto,
+                    montoCategoriaMayorGasto: gastosPorCategoria[categoriaMayorGasto]?.toFixed(2) || '0.00',
+                    categoriaMayorIngreso: categoriaMayorIngreso,
+                    montoCategoriaMayorIngreso: ingresosPorCategoria[categoriaMayorIngreso]?.toFixed(2) || '0.00'
+                };
+            };
+
+            // ========== PROCESAMIENTO MEJORADO DE CONSULTAS ==========
+
+            // Procesar consultas financieras específicas
+            const procesarConsultaFinanciera = async (consulta) => {
+                const consultaLower = consulta.toLowerCase();
+                let contextoAdicional = '';
+                let forzarActualizacion = consultaLower.includes('actual') ||
+                                         consultaLower.includes('recién') ||
+                                         consultaLower.includes('reciente') ||
+                                         consultaLower.includes('ahora');
+
+                // Obtener datos actualizados
+                const datosUsuario = await obtenerDatosUsuarioConCache(forzarActualizacion);
+                const movimientos = await obtenerMovimientosConCache('mes', forzarActualizacion);
+
+                if (!datosUsuario) {
+                    return '\n\n[ERROR] No se pudieron cargar los datos. Por favor, intenta nuevamente.';
+                }
+
+                // Análisis para consultas específicas
+                if (consultaLower.includes('mayor gasto') || consultaLower.includes('gasto más alto') || consultaLower.includes('más gasté')) {
+                    const mayorGasto = calcularMayorGasto(movimientos);
+                    if (mayorGasto) {
+                        contextoAdicional = `\n\n[CONTEXTO_ANALITICO]
+            MAYOR GASTO REGISTRADO:
+            • Monto: $${mayorGasto.monto}
+            • Categoría: ${mayorGasto.categoria}
+            • Cuenta: ${mayorGasto.cuenta}
+            • Fecha: ${mayorGasto.fecha}
+            ${mayorGasto.comentario ? `• Comentario: ${mayorGasto.comentario}` : ''}
+
+            [SEGUIMIENTO_DISPONIBLE]
+            ¿Necesitas consejos personalizados para optimizar gastos en "${mayorGasto.categoria}"?
+            [/SEGUIMIENTO_DISPONIBLE]
+            [/CONTEXTO_ANALITICO]`;
+                    }
+                }
+
+                // Análisis para mayor ingreso
+                else if (consultaLower.includes('mayor ingreso') ||
+                         consultaLower.includes('ingreso más alto') ||
+                         consultaLower.includes('más ingresé') ||
+                         consultaLower.includes('mayor ingreso del mes')) {
+
+                    const mayorIngreso = calcularMayorIngreso(movimientos);
+                    if (mayorIngreso) {
+                        contextoAdicional = `\n\n[CONTEXTO_ANALITICO]
+            MAYOR INGRESO REGISTRADO:
+            • Monto: $${mayorIngreso.monto}
+            • Categoría: ${mayorIngreso.categoria}
+            • Cuenta: ${mayorIngreso.cuenta}
+            • Fecha: ${mayorIngreso.fecha}
+            ${mayorIngreso.comentario ? `• Comentario: ${mayorIngreso.comentario}` : ''}
+            [/CONTEXTO_ANALITICO]`;
+                    } else {
+                        contextoAdicional = `\n\n[CONTEXTO_ANALITICO]
+            NO SE ENCONTRARON INGRESOS en el período actual.
+            [/CONTEXTO_ANALITICO]`;
+                    }
+                }
+
+                else if (consultaLower.includes('categoría') || consultaLower.includes('categoria')) {
+                    if (datosUsuario.categorias) {
+                        const categoriasGastos = datosUsuario.categorias.filter(c => c.tipo === 'G' && c.activo);
+                        const categoriasIngresos = datosUsuario.categorias.filter(c => c.tipo === 'I' && c.activo);
+
+                        contextoAdicional = `\n\n[CONTEXTO_CATEGORIAS_COMPLETO]
+            TODAS LAS CATEGORÍAS DE GASTOS (${categoriasGastos.length}):
+            ${categoriasGastos.map(c => `• ${c.nombre}`).join('\n')}
+
+            TODAS LAS CATEGORÍAS DE INGRESOS (${categoriasIngresos.length}):
+            ${categoriasIngresos.map(c => `• ${c.nombre}`).join('\n')}
+
+            Total categorías activas: ${categoriasGastos.length + categoriasIngresos.length}
+            [/CONTEXTO_CATEGORIAS_COMPLETO]`;
+                    }
+                }
+
+                else if (consultaLower.includes('estadística') || consultaLower.includes('promedio') || consultaLower.includes('análisis')) {
+                    const estadisticas = calcularEstadisticas(movimientos);
+                    if (estadisticas) {
+                        contextoAdicional = `\n\n[CONTEXTO_ANALITICO]
+            ESTADÍSTICAS DETALLADAS:
+            • Total movimientos: ${estadisticas.cantidadMovimientos}
+            • Gastos: ${estadisticas.cantidadGastos} movimientos ($${estadisticas.totalGastos})
+            • Ingresos: ${estadisticas.cantidadIngresos} movimientos ($${estadisticas.totalIngresos})
+            • Promedio por gasto: $${estadisticas.promedioGastos}
+            • Promedio por ingreso: $${estadisticas.promedioIngresos}
+            • Categoría con mayor gasto: ${estadisticas.categoriaMayorGasto} ($${estadisticas.montoCategoriaMayorGasto})
+            ${estadisticas.categoriaMayorIngreso ? `• Categoría con mayor ingreso: ${estadisticas.categoriaMayorIngreso} ($${estadisticas.montoCategoriaMayorIngreso})` : ''}
+            [/CONTEXTO_ANALITICO]`;
+                    }
+                }
+
+                // Contexto general para todas las consultas
+                contextoAdicional += `\n\n[CONTEXTO_GENERAL]
+            DATOS ACTUALIZADOS: ${new Date().toLocaleString()}
+            Total cuentas activas: ${datosUsuario.cuentas ? datosUsuario.cuentas.filter(c => c.activo).length : 0}
+            Saldo total: $${parseFloat(datosUsuario.saldoTotal || 0).toFixed(2)}
+            Movimientos cargados: ${movimientos ? movimientos.length : 0}
+            [/CONTEXTO_GENERAL]`;
+
+                return contextoAdicional;
+            };
+
+            // ========== FUNCIONES PRINCIPALES ==========
+
+            // Generar respuesta del bot usando OpenRouter
+            const generateBotResponse = async (thinkingElement) => {
+                const messageElement = thinkingElement.querySelector(".message-text");
+
+                try {
+                    // Procesar consulta y obtener contexto adicional
+                    const contextoAdicional = await procesarConsultaFinanciera(userData.message);
+
+                    // Agregar mensaje del usuario al historial
+                    conversationHistory.push({
+                        role: "user",
+                        content: `${userData.message}${contextoAdicional}`
+                    });
+
+                    // Hacer la petición a OpenRouter
+                    const response = await fetch(OPENROUTER_API_URL, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                            "HTTP-Referer": SITE_URL,
+                            "X-Title": SITE_NAME,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            "model": "google/gemini-2.5-flash-lite",
+                            "messages": conversationHistory,
+                            "temperature": 0.7,
+                            "max_tokens": 1500
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Error HTTP ${response.status}: ${errorText}`);
+                    }
+
+                    const data = await response.json();
+
+                    // Obtener la respuesta del asistente
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        let botResponse = data.choices[0].message.content;
+
+                        // Detectar si es una respuesta sobre mayor gasto y agregar botones
+                        if (userData.message.toLowerCase().includes('mayor gasto') ||
+                            userData.message.toLowerCase().includes('gasto más alto') ||
+                            userData.message.toLowerCase().includes('más gasté')) {
+
+                            // Extraer la categoría y monto del gasto del contexto
+                            const mayorGasto = calcularMayorGasto(await obtenerMovimientosConCache('mes'));
+                            if (mayorGasto) {
+                                botResponse += crearBotonesSeguimiento(mayorGasto.categoria, mayorGasto.monto);
+                            }
+                        }
+
+                        messageElement.innerHTML = botResponse;
+
+                        // Agregar event listeners a los botones después de renderizar
+                        setTimeout(() => {
+                            agregarEventListenersBotones();
+                        }, 100);
+
+                        conversationHistory.push({
+                            role: "assistant",
+                            content: botResponse
+                        });
+
+                    } else {
+                        throw new Error("Respuesta inesperada de la API");
+                    }
+
+                } catch (error) {
+                    console.error("Error:", error);
+                    messageElement.innerHTML = "⚠️ Error al conectar con el servicio. Por favor, verifica tu conexión.";
+                    messageElement.classList.add("error");
+                } finally {
+                    thinkingElement.classList.remove("thinking");
+                    scrollToLatestMessage();
+                }
+            };
+
+            // Manejar mensaje saliente
+            const handleOutgoingMessage = (e) => {
+                e.preventDefault();
+
+                userData.message = messageInput.value.trim();
+                if (!userData.message) return;
+
+                // Limpiar campo de entrada
+                messageInput.value = "";
+                messageInput.style.height = "32px";
+
+                // Crear y mostrar mensaje del usuario
+                const userMessageElement = createMessageElement(userData.message, true);
+                messagesContent.appendChild(userMessageElement);
+                scrollToLatestMessage();
+
+                // Mostrar indicador de "pensando" y generar respuesta
+                setTimeout(() => {
+                    const thinkingElement = createThinkingElement();
+                    messagesContent.appendChild(thinkingElement);
+                    scrollToLatestMessage();
+                    generateBotResponse(thinkingElement);
+                }, 600);
+            };
+
+            // ========== EVENT LISTENERS ==========
+
+            // Enviar mensaje con Enter (sin Shift)
+            messageInput.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleOutgoingMessage(e);
+                }
+            });
+
+            // Enviar mensaje con el botón
+            sendMessageButton.addEventListener("click", handleOutgoingMessage);
+
+            // Alternar visibilidad del chatbot
+            chatbotToggler.addEventListener("click", () => {
+                document.body.classList.toggle("show-chatbot");
+            });
+
+            closeChatbot.addEventListener("click", () => {
+                document.body.classList.remove("show-chatbot");
+            });
+
+            // Ajustar altura del campo de texto
+            messageInput.addEventListener("input", () => {
+                messageInput.style.height = "32px";
+                messageInput.style.height = `${Math.min(messageInput.scrollHeight, 80)}px`;
+            });
+
+            // ========== ESTILOS CSS ==========
+
+            // Agregar estilos para los botones y animaciones
+            const style = document.createElement('style');
+            style.textContent = `
+                .thinking-indicator {
+                    display: flex;
+                    gap: 4px;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 10px;
+                }
+                .dot {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background-color: #666;
+                    animation: dotPulse 1.4s ease-in-out infinite both;
+                }
+                .dot:nth-child(1) { animation-delay: -0.32s; }
+                .dot:nth-child(2) { animation-delay: -0.16s; }
+                @@keyframes dotPulse {
+                    0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+                    40% { transform: scale(1); opacity: 1; }
+                }
+                .message.error {
+                    color: #d32f2f;
+                }
+
+                /* Estilos para botones de seguimiento */
+                .botones-seguimiento {
+                    margin: 15px 0;
+                    padding: 12px;
+                    background: #f8f9fa;
+                    border-radius: 12px;
+                    border-left: 4px solid #4CAF50;
+                }
+
+                .pregunta-seguimiento {
+                    font-size: 14px;
+                    margin-bottom: 10px;
+                    color: #333;
+                    font-weight: 500;
+                    text-align: center;
+                }
+
+                .botones-container {
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+
+                .btn-seguimiento {
+                    padding: 8px 16px;
+                    border: none;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    font-weight: 500;
+                    min-width: 120px;
+                }
+
+                .btn-seguimiento:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                }
+
+                .btn-si {
+                    background: #4CAF50;
+                    color: white;
+                }
+
+                .btn-no {
+                    background: #f44336;
+                    color: white;
+                }
+
+                .btn-seguimiento:hover:not(:disabled) {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                }
+
+                .consejo-ahorro {
+                    background: #E8F5E8;
+                    border-left: 4px solid #4CAF50;
+                    padding: 12px;
+                    border-radius: 8px;
+                    margin: 10px 0;
+                }
+
+                /* Responsive */
+                @@media (max-width: 480px) {
+                    .botones-container {
+                        flex-direction: column;
+                        align-items: center;
+                    }
+
+                    .btn-seguimiento {
+                        width: 100%;
+                        max-width: 200px;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+    </script>
+</body>
+</html>

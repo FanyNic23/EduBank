@@ -1,0 +1,483 @@
+﻿@{
+    ViewData["Title"] = "EduBank - Tu Gestión Financiera Personal";
+    Layout = "_LayoutPresentation"; // Layout especial sin sidebar
+}
+
+<!-- Hero Section Mejorada -->
+<section class="hero-section bg-gradient-primary text-white py-5 overflow-hidden">
+    <div class="container">
+        <div class="row align-items-center min-vh-80">
+            <div class="col-lg-6">
+                <div class="mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-university display-1 me-3 opacity-75"></i>
+                        <h1 class="display-4 fw-bold mb-0">Edu<span class="text-warning">Bank</span></h1>
+                    </div>
+                    <h2 class="display-6 fw-bold mb-3">Toma el control de tus <span class="text-warning">finanzas</span></h2>
+                    <p class="lead mb-4 opacity-90">
+                        La plataforma integral para gestionar ingresos, gastos y alcanzar
+                        tus metas financieras. Simple, seguro y diseñado para tu éxito.
+                    </p>
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row flex-wrap gap-3 mb-4">
+                    <a href="@Url.Action("Login", "Acceso")" class="btn btn-warning btn-lg px-4 py-3 fw-bold shadow-sm">
+                        <i class="fas fa-rocket me-2"></i>¡Comenzar Ahora!
+                    </a>
+                    <a href="#caracteristicas" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-info-circle me-2"></i>Más Información
+                    </a>
+                    <a href="#modulos" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-graduation-cap me-2"></i>Módulos Educativos
+                    </a>
+                </div>
+
+                <!-- Stats Mini Mejorado -->
+                <div class="row mt-4 pt-3">
+                    <div class="col-4 text-center border-end border-light border-opacity-25">
+                        <h3 class="fw-bold text-warning mb-1">100%</h3>
+                        <small class="opacity-90">Gratuito</small>
+                    </div>
+                    <div class="col-4 text-center border-end border-light border-opacity-25">
+                        <h3 class="fw-bold text-warning mb-1">+500</h3>
+                        <small class="opacity-90">Usuarios</small>
+                    </div>
+                    <div class="col-4 text-center">
+                        <h3 class="fw-bold text-warning mb-1">24/7</h3>
+                        <small class="opacity-90">Disponible</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center position-relative">
+                <div class="mockup-device mt-4 position-relative">
+                    <div class="floating-elements">
+                        <div class="floating-element element-1 bg-warning rounded-circle position-absolute"></div>
+                        <div class="floating-element element-2 bg-primary rounded-circle position-absolute"></div>
+                        <div class="floating-element element-3 bg-success rounded-circle position-absolute"></div>
+                    </div>
+                    <img src="https://cdn.pixabay.com/photo/2024/06/18/03/40/finance-8836902_1280.jpg"
+                         class="img-fluid rounded-4 shadow-lg"
+                         alt="Dashboard EduBank"
+                         style="max-height: 400px; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Características Mejoradas -->
+<section id="caracteristicas" class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">¿Por qué elegirnos?</span>
+                <h2 class="display-5 fw-bold text-dark mb-3">La plataforma financiera más completa</h2>
+                <p class="lead text-muted">Todas las herramientas que necesitas para alcanzar tus metas financieras</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 transition-all feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-chart-pie text-primary fs-2"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Control Total</h4>
+                        <p class="text-muted">
+                            Monitorea cada movimiento, categoriza tus gastos y visualiza
+                            tu progreso financiero con gráficos intuitivos y reportes detallados.
+                        </p>
+                        <div class="mt-3">
+                            <span class="badge bg-primary bg-opacity-10 text-primary">Análisis</span>
+                            <span class="badge bg-primary bg-opacity-10 text-primary">Reportes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 transition-all feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-wallet text-success fs-2"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Múltiples Cuentas</h4>
+                        <p class="text-muted">
+                            Gestiona todas tus cuentas bancarias, tarjetas y efectivo
+                            en una plataforma unificada con sincronización automática.
+                        </p>
+                        <div class="mt-3">
+                            <span class="badge bg-success bg-opacity-10 text-success">Sincronización</span>
+                            <span class="badge bg-success bg-opacity-10 text-success">Multiplataforma</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 transition-all feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-shield-alt text-info fs-2"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Seguridad Avanzada</h4>
+                        <p class="text-muted">
+                            Tus datos están protegidos con encriptación de grado bancario.
+                            Tu privacidad y seguridad son nuestra máxima prioridad.
+                        </p>
+                        <div class="mt-3">
+                            <span class="badge bg-info bg-opacity-10 text-info">Encriptación</span>
+                            <span class="badge bg-info bg-opacity-10 text-info">Privacidad</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section Mejorada -->
+<section class="py-5 bg-dark text-white position-relative overflow-hidden">
+    <div class="bg-pattern position-absolute top-0 start-0 w-100 h-100 opacity-10"></div>
+    <div class="container position-relative">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h2 class="display-6 fw-bold mb-3">¿Listo para transformar tu vida financiera?</h2>
+                <p class="lead mb-4 opacity-90">
+                    Únete a miles de usuarios que ya están tomando el control de sus finanzas con EduBank.
+                </p>
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                    <a href="@Url.Action("Login", "Acceso")" class="btn btn-warning btn-lg px-5 py-3 fw-bold shadow-sm">
+                        <i class="fas fa-play me-2"></i>Empezar Mi Viaje Financiero
+                    </a>
+                    <a href="#modulos" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-book me-2"></i>Ver Módulos Educativos
+                    </a>
+                </div>
+                <div class="mt-4">
+                    <div class="d-flex justify-content-center flex-wrap gap-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <small class="opacity-75">Completamente gratis</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <small class="opacity-75">Sin tarjetas de crédito</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <small class="opacity-75">Configuración en 2 minutos</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Módulos Educativos Mejorados -->
+<section id="modulos" class="py-5 bg-white">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <span class="badge bg-warning bg-opacity-10 text-warning mb-3 px-3 py-2 rounded-pill">Aprende con nosotros</span>
+                <h2 class="display-5 fw-bold text-dark mb-3">Módulos Educativos</h2>
+                <p class="lead text-muted">Amplía tus conocimientos sobre finanzas personales con nuestros cursos especializados</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Módulo 1 -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 module-card">
+                    <div class="card-header bg-primary bg-opacity-10 border-0 py-4">
+                        <div class="text-center">
+                            <i class="fas fa-piggy-bank text-primary fs-1 mb-2"></i>
+                            <h5 class="fw-bold text-dark">Ahorro Inteligente</h5>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <p class="text-muted flex-grow-1">Descubre cómo administrar tus ingresos y planificar tus metas financieras de manera efectiva.</p>
+
+                        <div class="mt-auto">
+                            <button class="btn btn-outline-primary w-100" data-bs-toggle="collapse" data-bs-target="#modulo1">
+                                <span class="collapsed-text">Ver más</span>
+                                <span class="expanded-text d-none">Ver menos</span>
+                            </button>
+
+                            <div id="modulo1" class="collapse mt-3">
+                                <p class="text-start">
+                                    El módulo de <strong>Ahorro Inteligente</strong> te enseña a organizar tu presupuesto,
+                                    establecer metas realistas y evitar gastos innecesarios. Incluye herramientas prácticas para
+                                    calcular tus ahorros y estrategias probadas para alcanzar la independencia financiera.
+                                </p>
+                                <div class="ratio ratio-16x9 mt-3">
+                                    <iframe src="https://www.youtube.com/embed/hZweLjSVoqU"
+                                            title="Ahorro Inteligente"
+                                            allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Módulo 2 -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 module-card">
+                    <div class="card-header bg-success bg-opacity-10 border-0 py-4">
+                        <div class="text-center">
+                            <i class="fas fa-chart-line text-success fs-1 mb-2"></i>
+                            <h5 class="fw-bold text-dark">Inversiones Seguras</h5>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <p class="text-muted flex-grow-1">Aprende los fundamentos de inversión y cómo hacer crecer tu dinero de manera inteligente.</p>
+
+                        <div class="mt-auto">
+                            <button class="btn btn-outline-success w-100" data-bs-toggle="collapse" data-bs-target="#modulo2">
+                                <span class="collapsed-text">Ver más</span>
+                                <span class="expanded-text d-none">Ver menos</span>
+                            </button>
+
+                            <div id="modulo2" class="collapse mt-3">
+                                <p class="text-start">
+                                    En <strong>Inversiones Seguras</strong> conocerás los distintos tipos de inversión,
+                                    los riesgos asociados y cómo diversificar tu portafolio. También aprenderás a invertir
+                                    en fondos, bonos y acciones con confianza y criterio.
+                                </p>
+                                <div class="ratio ratio-16x9 mt-3">
+                                    <iframe src="https://www.youtube.com/embed/F6rruydac9I"
+                                            title="Inversiones Seguras"
+                                            allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Módulo 3 -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 module-card">
+                    <div class="card-header bg-info bg-opacity-10 border-0 py-4">
+                        <div class="text-center">
+                            <i class="fas fa-shield-alt text-info fs-1 mb-2"></i>
+                            <h5 class="fw-bold text-dark">Educación Financiera</h5>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <p class="text-muted flex-grow-1">Fortalece tus conocimientos sobre finanzas personales y toma decisiones informadas.</p>
+
+                        <div class="mt-auto">
+                            <button class="btn btn-outline-info w-100" data-bs-toggle="collapse" data-bs-target="#modulo3">
+                                <span class="collapsed-text">Ver más</span>
+                                <span class="expanded-text d-none">Ver menos</span>
+                            </button>
+
+                            <div id="modulo3" class="collapse mt-3">
+                                <p class="text-start">
+                                    El módulo de <strong>Educación Financiera</strong> ofrece conceptos clave sobre
+                                    planificación, ahorro, inversión y uso responsable del crédito. Ideal para mejorar
+                                    tu relación con el dinero y tomar decisiones financieras acertadas a largo plazo.
+                                </p>
+                                <div class="ratio ratio-16x9 mt-3">
+                                    <iframe src="https://www.youtube.com/embed/ALlSherR2ss"
+                                            title="Educación Financiera"
+                                            allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer Mejorado -->
+<footer class="py-5 bg-black text-white-50">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-university fs-2 text-warning me-2"></i>
+                    <h4 class="fw-bold text-white mb-0">Edu<span class="text-warning">Bank</span></h4>
+                </div>
+                <p class="mb-3">Tu aliado en el camino hacia la libertad financiera.</p>
+                <div class="d-flex gap-3">
+                    <a href="#" class="text-white-50 fs-5"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-white-50 fs-5"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white-50 fs-5"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white-50 fs-5"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                <h5 class="text-white mb-3">Enlaces</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#caracteristicas" class="text-white-50 text-decoration-none">Características</a></li>
+                    <li class="mb-2"><a href="#modulos" class="text-white-50 text-decoration-none">Módulos Educativos</a></li>
+                    <li class="mb-2"><a href="@Url.Action("Login", "Acceso")" class="text-white-50 text-decoration-none">Acceder</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <h5 class="text-white mb-3">Legal</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="@Url.Action("Privacy", "Home")" class="text-white-50 text-decoration-none">Privacidad</a></li>
+                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Términos de uso</a></li>
+                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Cookies</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4 border-secondary">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="mb-0">&copy; 2025 EduBank. Todos los derechos reservados.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <span class="text-white-50">Hecho con <i class="fas fa-heart text-danger"></i> para tu éxito financiero</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    }
+
+    .min-vh-80 {
+        min-height: 80vh;
+    }
+
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+    }
+
+    .module-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+    }
+
+    .feature-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .mockup-device img {
+        border: 8px solid #fff;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+
+    .collapse {
+        transition: all 0.4s ease;
+    }
+
+    .bg-pattern {
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .floating-elements .floating-element {
+        width: 20px;
+        height: 20px;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .floating-elements .element-1 {
+        top: 10%;
+        left: 5%;
+        animation-delay: 0s;
+    }
+
+    .floating-elements .element-2 {
+        top: 20%;
+        right: 10%;
+        width: 15px;
+        height: 15px;
+        animation-delay: 2s;
+    }
+
+    .floating-elements .element-3 {
+        bottom: 15%;
+        left: 15%;
+        width: 25px;
+        height: 25px;
+        animation-delay: 4s;
+    }
+
+    @@keyframes float {
+        0%
+
+    {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+
+    }
+</style>
+
+<script>
+    // Script para cambiar el texto de los botones de los módulos
+    document.addEventListener('DOMContentLoaded', function() {
+        const collapseButtons = document.querySelectorAll('[data-bs-toggle="collapse"]');
+
+        collapseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const target = this.getAttribute('data-bs-target');
+                const collapseElement = document.querySelector(target);
+
+                // Cambiar texto del botón
+                const collapsedText = this.querySelector('.collapsed-text');
+                const expandedText = this.querySelector('.expanded-text');
+
+                if (collapseElement.classList.contains('show')) {
+                    collapsedText.classList.remove('d-none');
+                    expandedText.classList.add('d-none');
+                } else {
+                    collapsedText.classList.add('d-none');
+                    expandedText.classList.remove('d-none');
+                }
+            });
+        });
+
+        // Manejar eventos de colapso de Bootstrap
+        document.querySelectorAll('.collapse').forEach(collapse => {
+            collapse.addEventListener('show.bs.collapse', function() {
+                const button = document.querySelector('[data-bs-target="#' + this.id + '"]');
+                const collapsedText = button.querySelector('.collapsed-text');
+                const expandedText = button.querySelector('.expanded-text');
+
+                collapsedText.classList.add('d-none');
+                expandedText.classList.remove('d-none');
+            });
+
+            collapse.addEventListener('hide.bs.collapse', function() {
+                const button = document.querySelector('[data-bs-target="#' + this.id + '"]');
+                const collapsedText = button.querySelector('.collapsed-text');
+                const expandedText = button.querySelector('.expanded-text');
+
+                collapsedText.classList.remove('d-none');
+                expandedText.classList.add('d-none');
+            });
+        });
+    });
+</script>

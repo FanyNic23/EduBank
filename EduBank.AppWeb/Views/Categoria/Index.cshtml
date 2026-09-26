@@ -1,0 +1,1059 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorías</title>
+
+
+    <!-- ✅ Toastr CSS primero -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .categoria-card.inactiva {
+            opacity: 0.6;
+            background-color: #f8f9fa;
+            border: 1px dashed #dee2e6 !important;
+        }
+
+            .categoria-card.inactiva:hover {
+                opacity: 0.8;
+                background-color: #e9ecef;
+            }
+
+        .estado-inactivo {
+            background-color: #6c757d !important;
+        }
+    </style>
+</head>
+
+
+<body>
+    <!-- ---------- UI: Titulo centrado y en negrita (sin subtítulo) ---------- -->
+    <div class="container-fluid py-4">
+        <div class="d-flex align-items-center justify-content-center mb-4">
+            <h1 class="display-6 fw-bold text-center">Categorías</h1>
+        </div>
+
+        <!-- Contenedor de pestañas y contenido -->
+        <div class="card shadow-sm card-surface">
+            <div class="card-header p-0 bg-transparent border-0">
+                <ul class="nav nav-tabs justify-content-center px-3" id="categoriasTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active d-flex align-items-center" id="gastos-tab" data-bs-toggle="tab" data-bs-target="#gastos" type="button" role="tab">
+                            Gastos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link d-flex align-items-center" id="ingresos-tab" data-bs-toggle="tab" data-bs-target="#ingresos" type="button" role="tab">
+                            Ingresos
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body p-3">
+                <div class="tab-content" id="categoriasTabsContent">
+                    <!-- Gastos -->
+                    <div class="tab-pane fade show active" id="gastos" role="tabpanel" aria-labelledby="gastos-tab">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h2 class="h6 mb-0 section-title">Gastos Registrados</h2>
+                            <div>
+                                <button class="btn btn-success btn-sm" onclick="mostrarFormNuevo('Gasto')">
+                                    <i class="bi bi-plus-circle me-1"></i> Agregar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 mb-3" id="gastos-grid"></div>
+                    </div>
+
+                    <!-- Ingresos -->
+                    <div class="tab-pane fade" id="ingresos" role="tabpanel" aria-labelledby="ingresos-tab">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h2 class="h6 mb-0 section-title">Ingresos Registrados</h2>
+                            <div>
+                                <button class="btn btn-success btn-sm" onclick="mostrarFormNuevo('Ingreso')">
+                                    <i class="bi bi-plus-circle me-1"></i> Agregar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 mb-3" id="ingresos-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para edición de categorías -->
+    <!-- Modal para creación/edición de categorías -->
+    <div class="modal fade" id="modalEdicion" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitulo">Nueva Categoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formCategoria" novalidate>
+                    <div class="modal-body">
+                        <input type="hidden" id="txtCategoriaId" value="0" />
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="txtNombre" class="form-label required-field">Nombre</label>
+                                <input type="text" id="txtNombre" class="form-control" required
+                                       placeholder="Ej: Comida, Transporte, Salario..." />
+                                <div class="invalid-feedback">El nombre es requerido</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="txtDescripcion" class="form-label">Descripción</label>
+                                <input type="text" id="txtDescripcion" class="form-control"
+                                       placeholder="Descripción opcional..." />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label required-field">Tipo</label>
+                                <div class="d-flex gap-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="tipoCategoria" id="radTipoGasto" value="G" checked />
+                                        <label class="form-check-label" for="radTipoGasto">Gasto</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="tipoCategoria" id="radTipoIngreso" value="I" />
+                                        <label class="form-check-label" for="radTipoIngreso">Ingreso</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Icono</label>
+                                <button type="button" id="btnSeleccionarIcono" class="btn btn-outline-secondary w-100 d-flex align-items-center">
+                                    <div class="icono-seleccionado-preview me-2" id="iconoPreview">
+                                        <i class="bi bi-emoji-smile"></i>
+                                    </div>
+                                    <span>Seleccionar icono</span>
+                                </button>
+                                <input type="hidden" id="txtIcono" value="bi bi-emoji-smile" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Color</label>
+                                <button type="button" id="btnSeleccionarColor" class="btn btn-outline-secondary w-100 d-flex align-items-center">
+                                    <div class="color-seleccionado-preview me-2" id="colorPreview" style="background-color: #10b981;"></div>
+                                    <span>Seleccionar color</span>
+                                </button>
+                                <input type="hidden" id="txtColor" value="#10b981" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="btnGuardar">
+                            <i class="bi bi-check-circle me-1"></i> Guardar
+                        </button>
+                        <button type="button" id="btnDesactivar" class="btn btn-outline-warning d-none">
+                            <i class="bi bi-power me-1"></i> Desactivar
+                        </button>
+                        <button type="button" id="btnEliminar" class="btn btn-danger d-none">
+                            <i class="bi bi-trash me-1"></i> Eliminar
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-1"></i> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para selección de iconos -->
+    <div class="modal fade" id="modalIconos" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Seleccionar Icono</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <input type="text" id="buscarIcono" class="form-control" placeholder="Buscar icono...">
+                        <button class="btn btn-outline-secondary" type="button" id="limpiarBusquedaIcono">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                    <div class="row row-cols-4 row-cols-sm-5 row-cols-md-6 g-3" id="gridIconos">
+                        <!-- Los iconos se cargarán dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para selección de colores -->
+    <div class="modal fade" id="modalColores" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Seleccionar Color</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row row-cols-4 row-cols-sm-5 row-cols-md-6 g-3" id="gridColores">
+                        <!-- Los colores se cargarán dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+                // Variables globales
+        let iconosDisponibles = [];
+        let modalEdicion = null;
+
+        // Función para mostrar el formulario de nueva categoría
+        function mostrarFormNuevo(tipo) {
+            console.log('➕ Mostrando formulario para:', tipo);
+
+            // Resetear el formulario
+            $('#txtCategoriaId').val(0);
+            $('#txtNombre').val('');
+            $('#txtDescripcion').val('');
+            $('#txtIcono').val('bi bi-emoji-smile');
+            $('#txtColor').val('#10b981');
+            $('#chkActivo').prop('checked', true);
+
+            // Establecer el tipo
+            if (tipo === 'Gasto' || tipo === 'G') {
+                $('#radTipoGasto').prop('checked', true);
+            } else {
+                $('#radTipoIngreso').prop('checked', true);
+            }
+
+            // Actualizar previews
+            actualizarPreviewIcono();
+            actualizarPreviewColor();
+
+            // Configurar modal para creación
+            $('#modalTitulo').text('Nueva Categoría');
+            $('#btnDesactivar').addClass('d-none');
+            $('#btnEliminar').addClass('d-none');
+            $('#btnGuardar').html('<i class="bi bi-check-circle me-1"></i> Crear Categoría');
+
+            // Remover clases de validación
+            $('#formCategoria').removeClass('was-validated');
+
+            // Mostrar modal
+            if (!modalEdicion) {
+                modalEdicion = new bootstrap.Modal('#modalEdicion');
+            }
+            modalEdicion.show();
+        }
+
+               function guardarCategoria() {
+            console.log('💾 Iniciando guardado de categoría...');
+
+            const form = $('#formCategoria')[0];
+            const categoriaId = parseInt($('#txtCategoriaId').val());
+
+            // Validar formulario
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                toastr.warning('Por favor completa los campos requeridos');
+                return;
+            }
+
+            // Obtener datos del formulario
+            const categoriaData = {
+                CategoriaId: categoriaId,
+                Nombre: $('#txtNombre').val().trim(),
+                Descripcion: $('#txtDescripcion').val().trim(),
+                Tipo: $('input[name="tipoCategoria"]:checked').val(),
+                Icono: $('#txtIcono').val(),
+                Color: $('#txtColor').val(),
+                Activo: $('#chkActivo').is(':checked')
+            };
+
+            console.log('📦 Datos a enviar:', categoriaData);
+
+            // Determinar el endpoint según si es creación o edición
+            const url = categoriaId === 0 ? '/Categoria/Insertar' : '/Categoria/Actualizar';
+            const method = categoriaId === 0 ? 'POST' : 'PUT';
+
+            console.log(`🌐 Enviando a: ${url} con método: ${method}`);
+
+            // Mostrar loading en el botón
+            const btnGuardar = $('#btnGuardar');
+            const originalText = btnGuardar.html();
+            btnGuardar.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i> Guardando...');
+
+            // Enviar datos al servidor
+            $.ajax({
+                url: url,
+                type: method, // ✅ Usar PUT para actualizar
+                contentType: 'application/json',
+                data: JSON.stringify(categoriaData),
+                success: function(response) {
+                    console.log('✅ Respuesta del servidor:', response);
+
+                    if (response.valor) {
+                        toastr.success(response.mensaje || 'Operación realizada correctamente');
+                        modalEdicion.hide();
+                        cargarCategorias(); // Recargar la lista
+                    } else {
+                        toastr.error(response.mensaje || 'Error al realizar la operación');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('❌ Error al guardar:', error);
+                    let mensajeError = 'Error al realizar la operación';
+
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        mensajeError = response.mensaje || mensajeError;
+                    } catch (e) {
+                        // Si no se puede parsear la respuesta, usar el mensaje por defecto
+                    }
+
+                    toastr.error(mensajeError);
+                },
+                complete: function() {
+                    // Restaurar botón
+                    btnGuardar.prop('disabled', false).html(originalText);
+                }
+            });
+        }
+
+        // Función para actualizar preview del icono
+        function actualizarPreviewIcono() {
+            const icono = $('#txtIcono').val();
+            $('#iconoPreview').html(`<i class="${icono}"></i>`);
+            $('#btnSeleccionarIcono .icono-seleccionado-preview').html(`<i class="${icono}"></i>`);
+        }
+
+        // Función para actualizar preview del color
+        function actualizarPreviewColor() {
+            const color = $('#txtColor').val();
+            $('#colorPreview').css('background-color', color);
+            $('#btnSeleccionarColor .color-seleccionado-preview').css('background-color', color);
+        }
+
+        // Función para cargar iconos disponibles
+                function cargarIconos() {
+            // Lista ampliada de iconos de Bootstrap Icons organizados por categorías
+            iconosDisponibles = [
+                // 🏠 HOGAR Y CONSTRUCCIÓN
+                'bi bi-house', 'bi bi-house-door', 'bi bi-house-heart', 'bi bi-house-check',
+                'bi bi-house-gear', 'bi bi-house-lock', 'bi bi-building', 'bi bi-buildings',
+                'bi bi-home', 'bi bi-door-closed', 'bi bi-door-open', 'bi bi-window',
+                'bi bi-lightbulb', 'bi bi-lamp', 'bi bi-fan', 'bi bi-thermometer',
+                'bi bi-snow', 'bi bi-fire', 'bi bi-plug', 'bi bi-outlet',
+
+                // 🛒 COMPRAS Y COMERCIO
+                'bi bi-cart', 'bi bi-cart-check', 'bi bi-cart-plus', 'bi bi-cart-dash',
+                'bi bi-cart-x', 'bi bi-bag', 'bi bi-bag-check', 'bi bi-bag-plus',
+                'bi bi-bag-dash', 'bi bi-bag-x', 'bi bi-basket', 'bi bi-basket2',
+                'bi bi-basket3', 'bi bi-shop', 'bi bi-shop-window', 'bi bi-tag',
+                'bi bi-tags', 'bi bi-receipt', 'bi bi-receipt-cutoff',
+
+                // 🚗 TRANSPORTE Y VEHÍCULOS
+                'bi bi-car', 'bi bi-car-front', 'bi bi-truck', 'bi bi-bus-front',
+                'bi bi-train-front', 'bi bi-airplane', 'bi bi-airplane-engines',
+                'bi bi-bicycle', 'bi bi-scooter', 'bi bi-fuel-pump', 'bi bi-ev-front',
+                'bi bi-speedometer', 'bi bi-gear', 'bi bi-gear-wide', 'bi bi-tools',
+                'bi bi-wrench', 'bi bi-screwdriver',
+
+                // 🏥 SALUD Y BIENESTAR
+                'bi bi-heart', 'bi bi-heart-pulse', 'bi bi-heartbreak', 'bi bi-hospital',
+                'bi bi-capsule', 'bi bi-capsule-pill', 'bi bi-prescription',
+                'bi bi-thermometer-high', 'bi bi-thermometer-low', 'bi bi-activity',
+                'bi bi-plus-circle', 'bi bi-plus-square', 'bi bi-droplet',
+                'bi bi-prescription2', 'bi bi-capsule', 'bi bi-file-medical',
+
+                // 📱 TECNOLOGÍA Y ELECTRÓNICOS
+                'bi bi-phone', 'bi bi-phone-fill', 'bi bi-tablet', 'bi bi-laptop',
+                'bi bi-pc', 'bi bi-display', 'bi bi-tv', 'bi bi-camera',
+                'bi bi-camera-video', 'bi bi-headphones', 'bi bi-speaker',
+                'bi bi-mouse', 'bi bi-keyboard', 'bi bi-printer', 'bi bi-router',
+                'bi bi-wifi', 'bi bi-bluetooth', 'bi bi-usb', 'bi bi-usb-drive',
+
+                // 🍽️ ALIMENTOS Y BEBIDAS
+                'bi bi-cup-straw', 'bi bi-cup', 'bi bi-egg', 'bi bi-egg-fried',
+                'bi bi-apple', 'bi bi-banana', 'bi bi-grapes', 'bi bi-carrot',
+                'bi bi-cheese', 'bi bi-bread-slice', 'bi bi-cake', 'bi bi-cookie',
+                'bi bi-utensils', 'bi bi-egg-fill', 'bi bi-cup-hot', 'bi bi-cup-straw',
+
+                // 👗 MODA Y VESTUARIO
+                'bi bi-bag', 'bi bi-handbag', 'bi bi-sunglasses', 'bi bi-watch',
+                'bi bi-gem', 'bi bi-necklace', 'bi bi-brilliance', 'bi bi-tshirt',
+
+                // 🎁 REGALOS Y ENTRETENIMIENTO
+                'bi bi-gift', 'bi bi-gift-fill', 'bi bi-balloon', 'bi bi-balloon-heart',
+                'bi bi-controller', 'bi bi-joystick', 'bi bi-dice-1', 'bi bi-dice-2',
+                'bi bi-dice-3', 'bi bi-dice-4', 'bi bi-dice-5', 'bi bi-dice-6',
+                'bi bi-film', 'bi bi-ticket', 'bi bi-ticket-perforated',
+
+                // 💰 FINANZAS Y DINERO
+                'bi bi-cash', 'bi bi-cash-coin', 'bi bi-cash-stack', 'bi bi-coin',
+                'bi bi-currency-dollar', 'bi bi-currency-euro', 'bi bi-currency-pound',
+                'bi bi-currency-yen', 'bi bi-currency-bitcoin', 'bi bi-credit-card',
+                'bi bi-credit-card-2-front', 'bi bi-wallet', 'bi bi-wallet2',
+                'bi bi-piggy-bank', 'bi bi-safe', 'bi bi-safe2', 'bi bi-bank',
+                'bi bi-graph-up', 'bi bi-graph-down', 'bi bi-bar-chart',
+                'bi bi-pie-chart', 'bi bi-calculator',
+
+                // 💼 NEGOCIOS Y OFICINA
+                'bi bi-briefcase', 'bi bi-briefcase-fill', 'bi bi-clipboard',
+                'bi bi-clipboard-check', 'bi bi-clipboard-data', 'bi bi-clipboard-plus',
+                'bi bi-folder', 'bi bi-folder2', 'bi bi-folder-check', 'bi bi-folder-plus',
+                'bi bi-folder-symlink', 'bi bi-file', 'bi bi-file-text', 'bi bi-file-earmark',
+                'bi bi-file-earmark-text', 'bi bi-printer', 'bi bi-archive',
+
+                // 🏆 LOGROS Y RECOMPENSAS
+                'bi bi-award', 'bi bi-award-fill', 'bi bi-trophy', 'bi bi-trophy-fill',
+                'bi bi-star', 'bi bi-star-fill', 'bi bi-star-half', 'bi bi-medal',
+                'bi bi-patch-check', 'bi bi-patch-check-fill', 'bi bi-emoji-smile',
+                'bi bi-emoji-laughing', 'bi bi-emoji-heart-eyes',
+
+                // 🔒 SEGURIDAD Y ACCESO
+                'bi bi-shield', 'bi bi-shield-check', 'bi bi-shield-lock', 'bi bi-shield-exclamation',
+                'bi bi-key', 'bi bi-key-fill', 'bi bi-lock', 'bi bi-lock-fill',
+                'bi bi-unlock', 'bi bi-unlock-fill', 'bi bi-eye', 'bi bi-eye-slash',
+
+                // 📧 COMUNICACIÓN
+                'bi bi-envelope', 'bi bi-envelope-fill', 'bi bi-envelope-open',
+                'bi bi-envelope-check', 'bi bi-chat', 'bi bi-chat-left', 'bi bi-chat-right',
+                'bi bi-chat-dots', 'bi bi-chat-quote', 'bi bi-telephone', 'bi bi-telephone-fill',
+                'bi bi-telephone-outbound', 'bi bi-megaphone', 'bi bi-megaphone-fill',
+                'bi bi-bell', 'bi bi-bell-fill', 'bi bi-bell-slash',
+
+                // 🎨 ARTE Y CREATIVIDAD
+                'bi bi-palette', 'bi bi-palette2', 'bi bi-brush', 'bi bi-brush-fill',
+                'bi bi-easel', 'bi bi-easel2', 'bi bi-easel3', 'bi bi-pencil',
+                'bi bi-pencil-fill', 'bi bi-pencil-square', 'bi bi-eraser',
+                'bi bi-eraser-fill', 'bi bi-scissors', 'bi bi-pen', 'bi bi-pen-fill',
+
+                // 📚 EDUCACIÓN Y APRENDIZAJE
+                'bi bi-book', 'bi bi-book-fill', 'bi bi-book-half', 'bi bi-journal',
+                'bi bi-journal-bookmark', 'bi bi-journal-text', 'bi bi-journal-check',
+                'bi bi-backpack', 'bi bi-backpack2', 'bi bi-backpack3', 'bi bi-backpack4',
+
+                // ⚡ ENERGÍA Y SERVICIOS
+                'bi bi-lightning', 'bi bi-lightning-charge', 'bi bi-lightning-fill',
+                'bi bi-power', 'bi bi-plug', 'bi bi-plug-fill', 'bi bi-outlet',
+                'bi bi-water', 'bi bi-fuel-pump', 'bi bi-fuel-pump-diesel',
+
+                // 🛠️ HERRAMIENTAS Y CONFIGURACIÓN
+                'bi bi-gear', 'bi bi-gear-fill', 'bi bi-gear-wide', 'bi bi-gear-wide-connected',
+                'bi bi-tools', 'bi bi-hammer', 'bi bi-screwdriver', 'bi bi-wrench',
+                'bi bi-wrench-adjustable', 'bi bi-nut', 'bi bi-sliders',
+                'bi bi-sliders2', 'bi bi-sliders2-vertical',
+
+                // 📅 TIEMPO Y CALENDARIO
+                'bi bi-calendar', 'bi bi-calendar-check', 'bi bi-calendar-plus',
+                'bi bi-calendar-week', 'bi bi-calendar-month', 'bi bi-calendar-date',
+                'bi bi-clock', 'bi bi-clock-fill', 'bi bi-clock-history',
+                'bi bi-stopwatch', 'bi bi-stopwatch-fill', 'bi bi-hourglass',
+                'bi bi-hourglass-split', 'bi bi-hourglass-bottom', 'bi bi-hourglass-top',
+
+                // 🌍 NATURALEZA Y MEDIO AMBIENTE
+                'bi bi-tree', 'bi bi-tree-fill', 'bi bi-flower1', 'bi bi-flower2',
+                'bi bi-flower3', 'bi bi-sun', 'bi bi-sun-fill', 'bi bi-moon',
+                'bi bi-moon-fill', 'bi bi-moon-stars', 'bi bi-cloud', 'bi bi-cloud-fill',
+                'bi bi-cloud-drizzle', 'bi bi-cloud-rain', 'bi bi-cloud-snow',
+                'bi bi-umbrella', 'bi bi-droplet', 'bi bi-droplet-fill',
+
+                // 🎵 MÚSICA Y AUDIO
+                'bi bi-music-note', 'bi bi-music-note-beamed', 'bi bi-music-note-list',
+                'bi bi-speaker', 'bi bi-speaker-fill', 'bi bi-volume-up', 'bi bi-volume-down',
+                'bi bi-volume-mute', 'bi bi-volume-off', 'bi bi-headphones',
+                'bi bi-mic', 'bi bi-mic-fill', 'bi bi-mic-mute', 'bi bi-mic-mute-fill',
+
+                // 🏃 DEPORTES Y ACTIVIDADES
+                'bi bi-bicycle', 'bi bi-person-walking', 'bi bi-person-running',
+                'bi bi-trophy', 'bi bi-award', 'bi bi-dribbble', 'bi bi-balloon',
+                'bi bi-activity', 'bi bi-heart-pulse',
+
+                // 🛒 SUPERMERCADO Y PRODUCTOS
+                'bi bi-basket', 'bi bi-basket2', 'bi bi-basket3', 'bi bi-cart',
+                'bi bi-cart-check', 'bi bi-cart-plus', 'bi bi-cart-dash',
+                'bi bi-tag', 'bi bi-tags', 'bi bi-receipt', 'bi bi-scale',
+
+                // 🎭 VARIOS Y GENERALES
+                'bi bi-emoji-smile', 'bi bi-emoji-laughing', 'bi bi-emoji-heart-eyes',
+                'bi bi-emoji-angry', 'bi bi-emoji-dizzy', 'bi bi-emoji-expressionless',
+                'bi bi-flag', 'bi bi-flag-fill', 'bi bi-bookmark', 'bi bi-bookmark-fill',
+                'bi bi-bookmark-check', 'bi bi-bookmark-plus', 'bi bi-bookmark-star',
+                'bi bi-link', 'bi bi-link-45deg', 'bi bi-box', 'bi bi-box-arrow-up',
+                'bi bi-box-arrow-down', 'bi bi-arrow-left-right', 'bi bi-arrow-up-down',
+                'bi bi-plus', 'bi bi-dash', 'bi bi-x', 'bi bi-check', 'bi bi-check-circle',
+                'bi bi-exclamation', 'bi bi-exclamation-circle', 'bi bi-exclamation-triangle',
+                'bi bi-question', 'bi bi-question-circle', 'bi bi-info', 'bi bi-info-circle'
+            ];
+
+            renderizarIconos(iconosDisponibles);
+        }
+
+        // Función para renderizar iconos en el modal
+        function renderizarIconos(iconos) {
+            const grid = $('#gridIconos');
+            grid.empty();
+
+            iconos.forEach(icono => {
+                grid.append(`
+                    <div class="col">
+                        <div class="card icono-card text-center p-3" onclick="seleccionarIcono('${icono}')" style="cursor: pointer;">
+                            <i class="${icono} fs-4"></i>
+                            <small class="d-block mt-1 text-muted" style="font-size: 0.7rem;">${icono.replace('bi bi-', '')}</small>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        // Función para eliminar categoría
+async function eliminarCategoria(categoriaId) {
+    if (!confirm('¿Estás seguro de que quieres eliminar esta categoría?\n\nEsta acción no se puede deshacer.')) {
+        return;
+    }
+
+    try {
+        // Mostrar loading
+        const btnEliminar = $('#btnEliminar');
+        const originalText = btnEliminar.html();
+        btnEliminar.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i> Eliminando...');
+
+        const response = await $.ajax({
+            url: `/Categoria/Eliminar?id=${categoriaId}`,
+            type: 'DELETE'
+        });
+
+        console.log('✅ Respuesta de eliminación:', response);
+
+        if (response.valor) {
+            toastr.success(response.mensaje || 'Categoría eliminada correctamente');
+            if (modalEdicion) {
+                modalEdicion.hide();
+            }
+            cargarCategorias(); // Recargar lista
+        } else {
+            toastr.error(response.mensaje || 'Error al eliminar la categoría');
+        }
+    } catch (error) {
+        console.error('❌ Error al eliminar:', error);
+        let mensajeError = 'Error al eliminar la categoría';
+        
+        try {
+            const response = JSON.parse(error.responseText);
+            mensajeError = response.mensaje || mensajeError;
+        } catch (e) {
+            // Si no se puede parsear la respuesta
+        }
+        
+        toastr.error(mensajeError);
+    } finally {
+        // Restaurar botón
+        $('#btnEliminar').prop('disabled', false).html('<i class="bi bi-trash me-1"></i> Eliminar');
+    }
+}
+
+// Función para cambiar estado (activar/desactivar)
+    async function cambiarEstadoCategoria(categoriaId, nuevoEstado) {
+        try {
+            // Mostrar loading
+            const btnDesactivar = $('#btnDesactivar');
+            const originalText = btnDesactivar.html();
+            btnDesactivar.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i> Procesando...');
+
+            const response = await $.ajax({
+                url: '/Categoria/CambiarEstado',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    CategoriaId: categoriaId,
+                    Activo: nuevoEstado
+                })
+            });
+
+            console.log('✅ Respuesta de cambio de estado:', response);
+
+            if (response.valor) {
+                toastr.success(response.mensaje || 'Estado actualizado correctamente');
+                if (modalEdicion) {
+                    modalEdicion.hide();
+                }
+                cargarCategorias(); // Recargar lista
+            } else {
+                toastr.error(response.mensaje || 'Error al cambiar el estado');
+            }
+        } catch (error) {
+            console.error('❌ Error al cambiar estado:', error);
+            let mensajeError = 'Error al cambiar el estado de la categoría';
+        
+            try {
+                const response = JSON.parse(error.responseText);
+                mensajeError = response.mensaje || mensajeError;
+            } catch (e) {
+                // Si no se puede parsear la respuesta
+            }
+        
+            toastr.error(mensajeError);
+        } finally {
+            // Restaurar botón
+            $('#btnDesactivar').prop('disabled', false).html(
+                nuevoEstado ? 
+                '<i class="bi bi-power me-1"></i> Desactivar' : 
+                '<i class="bi bi-power me-1"></i> Activar'
+            );
+        }
+    }
+
+        // Función para seleccionar icono
+        function seleccionarIcono(icono) {
+            $('#txtIcono').val(icono);
+            actualizarPreviewIcono();
+            bootstrap.Modal.getInstance('#modalIconos').hide();
+        }
+
+        // Función para cargar colores predefinidos
+        function cargarColores() {
+                    const colores = [
+                // 🟥 ROJOS - Gastos esenciales, urgentes
+                '#dc2626', '#ef4444', '#f87171', '#fca5a5', '#b91c1c',
+                '#991b1b', '#7f1d1d', '#450a0a', '#fee2e2', '#fecaca',
+
+                // 🟧 NARANJAS - Gastos personales, ocio
+                '#ea580c', '#f97316', '#fb923c', '#fdba74', '#c2410c',
+                '#9a3412', '#7c2d12', '#431407', '#ffedd5', '#fed7aa',
+
+                // 🟨 AMARILLOS - Ahorros, inversiones
+                '#ca8a04', '#eab308', '#facc15', '#fde047', '#a16207',
+                '#854d0e', '#713f12', '#422006', '#fef9c3', '#fef08a',
+
+                // 🟩 VERDES - Ingresos, crecimiento
+                '#16a34a', '#22c55e', '#4ade80', '#86efac', '#15803d',
+                '#166534', '#14532d', '#052e16', '#dcfce7', '#bbf7d0',
+
+                // 🟦 AZULES - Servicios, tecnología
+                '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#1d4ed8',
+                '#1e40af', '#1e3a8a', '#172554', '#dbeafe', '#bfdbfe',
+
+                // 🟪 MORADOS - Lujos, entretenimiento
+                '#7c3aed', '#8b5cf6', '#a78bfa', '#c4b5fd', '#6d28d9',
+                '#5b21b6', '#4c1d95', '#2e1065', '#ede9fe', '#ddd6fe',
+
+                // 🎀 ROSAS - Salud, belleza, cuidado personal
+                '#db2777', '#ec4899', '#f472b6', '#f9a8d4', '#be185d',
+                '#9d174d', '#831843', '#500724', '#fce7f3', '#fbcfe8',
+
+                // 🟫 MARRONES - Hogar, alimentos
+                '#92400e', '#a16207', '#b45309', '#d97706', '#78350f',
+                '#854d0e', '#713f12', '#451a03', '#fef3c7', '#fde68a',
+
+                // 🌫️ GRISES - Gastos fijos, administrativos
+                '#4b5563', '#6b7280', '#9ca3af', '#d1d5db', '#374151',
+                '#1f2937', '#111827', '#030712', '#f3f4f6', '#e5e7eb',
+
+                // 💎 TURQUESAS - Viajes, experiencias
+                '#0d9488', '#14b8a6', '#2dd4bf', '#5eead4', '#0f766e',
+                '#115e59', '#134e4a', '#042f2e', '#ccfbf1', '#99f6e4',
+
+                // �️ CÍAN - Educación, desarrollo
+                '#0891b2', '#06b6d4', '#22d3ee', '#67e8f9', '#0e7490',
+                '#155e75', '#164e63', '#083344', '#cffafe', '#a5f3fc',
+
+                // 🍃 VERDE AZULADO - Naturaleza, deportes
+                '#0f766e', '#14b8a6', '#2dd4bf', '#5eead4', '#115e59',
+                '#134e4a', '#0d4b47', '#042f2e', '#ccfbf1', '#99f6e4',
+
+                // 🍇 VIOLETAS - Cultura, arte
+                '#7e22ce', '#9333ea', '#a855f7', '#c084fc', '#6b21a8',
+                '#581c87', '#3b0764', '#1e0b33', '#f3e8ff', '#e9d5ff',
+
+                // 🥑 VERDES OSCUROS - Finanzas, negocios
+                '#059669', '#10b981', '#34d399', '#6ee7b7', '#047857',
+                '#065f46', '#064e3b', '#022c22', '#d1fae5', '#a7f3d0',
+
+                // 🌅 DORADOS - Ingresos premium, bonos
+                '#d97706', '#f59e0b', '#fbbf24', '#fcd34d', '#b45309',
+                '#92400e', '#78350f', '#451a03', '#fef3c7', '#fde68a',
+
+                // 🏮 CORALES - Restaurantes, comida fuera
+                '#ea580c', '#f97316', '#fb923c', '#fdba74', '#c2410c',
+                '#9a3412', '#7c2d12', '#431407', '#ffedd5', '#fed7aa',
+
+                // 🌊 AZULES PROFUNDOS - Seguros, protección
+                '#1e40af', '#2563eb', '#3b82f6', '#60a5fa', '#1d4ed8',
+                '#1e3a8a', '#172554', '#0f1a3d', '#dbeafe', '#bfdbfe',
+
+                // 🍂 TERRA - Automóvil, transporte
+                '#b45309', '#d97706', '#f59e0b', '#fbbf24', '#92400e',
+                '#78350f', '#451a03', '#2a1501', '#fef3c7', '#fde68a',
+
+                // 🌸 LILAS - Regalos, donaciones
+                '#a855f7', '#c084fc', '#d8b4fe', '#e9d5ff', '#9333ea',
+                '#7e22ce', '#6b21a8', '#3b0764', '#f3e8ff', '#e9d5ff'
+            ];
+
+            const grid = $('#gridColores');
+            grid.empty();
+
+            colores.forEach(color => {
+                grid.append(`
+                    <div class="col">
+                        <div class="card color-card text-center p-3" onclick="seleccionarColor('${color}')" style="cursor: pointer;">
+                            <div class="color-preview mx-auto" style="width: 40px; height: 40px; background-color: ${color}; border-radius: 4px;"></div>
+                            <small class="d-block mt-1 text-muted" style="font-size: 0.7rem;">${color}</small>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        // Función para seleccionar color
+        function seleccionarColor(color) {
+            $('#txtColor').val(color);
+            actualizarPreviewColor();
+            bootstrap.Modal.getInstance('#modalColores').hide();
+        }
+
+        // Event Listeners
+        $(document).ready(function() {
+            console.log('🚀 Inicializando funcionalidades de categorías...');
+
+            // Cargar datos iniciales
+            cargarIconos();
+            cargarColores();
+
+            // Submit del formulario
+            $('#formCategoria').on('submit', function(e) {
+                e.preventDefault();
+                guardarCategoria();
+            });
+
+            // Botón seleccionar icono
+            $('#btnSeleccionarIcono').on('click', function() {
+                new bootstrap.Modal('#modalIconos').show();
+            });
+
+            // Botón seleccionar color
+            $('#btnSeleccionarColor').on('click', function() {
+                new bootstrap.Modal('#modalColores').show();
+            });
+
+            // Búsqueda de iconos
+            $('#buscarIcono').on('input', function() {
+                const termino = $(this).val().toLowerCase();
+                if (termino) {
+                    const iconosFiltrados = iconosDisponibles.filter(icono =>
+                        icono.toLowerCase().includes(termino)
+                    );
+                    renderizarIconos(iconosFiltrados);
+                } else {
+                    renderizarIconos(iconosDisponibles);
+                }
+            });
+
+            // Limpiar búsqueda
+            $('#limpiarBusquedaIcono').on('click', function() {
+                $('#buscarIcono').val('');
+                renderizarIconos(iconosDisponibles);
+            });
+
+            // Validación en tiempo real
+            $('#txtNombre').on('input', function() {
+                if ($(this).val().trim()) {
+                    $(this).removeClass('is-invalid').addClass('is-valid');
+                } else {
+                    $(this).removeClass('is-valid').addClass('is-invalid');
+                }
+            });
+
+            console.log('✅ Funcionalidades de categorías inicializadas');
+        });
+
+
+        // Función principal para cargar todas las categorías
+        function cargarCategorias() {
+            console.log('🔍 Iniciando carga de categorías...');
+
+            $.ajax({
+                url: '/Categoria/Lista',
+                type: 'GET',
+                success: function (response) {
+                    console.log('✅ Respuesta recibida:', response);
+
+                    if (Array.isArray(response)) {
+                        console.log(`📊 Se encontraron ${response.length} categorías`);
+                        renderizarCategorias(response);
+                    } else {
+                        console.error('❌ La respuesta no es un array:', response);
+                        toastr.error('Formato de respuesta inválido');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('❌ Error en la petición:', {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        error: error,
+                        responseText: xhr.responseText
+                    });
+
+                    if (xhr.status === 401) {
+                        toastr.error('No estás autenticado. Por favor inicia sesión.');
+                    } else if (xhr.status === 500) {
+                        toastr.error('Error del servidor al cargar categorías');
+                    } else {
+                        toastr.error('Error al cargar las categorías: ' + error);
+                    }
+                },
+                complete: function() {
+                    console.log('🏁 Petición completada');
+                }
+            });
+        }
+
+        // Función para renderizar las categorías
+        function renderizarCategorias(categorias) {
+            console.log('🎨 Renderizando categorías:', categorias);
+
+            // Limpiar las grids
+            $('#gastos-grid').empty();
+            $('#ingresos-grid').empty();
+
+            if (!categorias || categorias.length === 0) {
+                console.log('📭 No hay categorías para mostrar');
+                mostrarMensajeSinDatos();
+                return;
+            }
+
+            // Separar categorías por tipo - IMPORTANTE: verifica si usa 'Tipo' o 'tipo'
+            const gastos = categorias.filter(c => c.tipo === 'G' || c.Tipo === 'G');
+            const ingresos = categorias.filter(c => c.tipo === 'I' || c.Tipo === 'I');
+
+            console.log('💰 Gastos:', gastos);
+            console.log('💵 Ingresos:', ingresos);
+
+            // Renderizar gastos
+            if (gastos.length > 0) {
+                gastos.forEach(categoria => {
+                    $('#gastos-grid').append(crearCardCategoria(categoria));
+                });
+                console.log('✅ Gastos renderizados correctamente');
+            } else {
+                $('#gastos-grid').html(crearMensajeVacio('gastos'));
+                console.log('📭 No hay categorías de gastos');
+            }
+
+            // Renderizar ingresos
+            if (ingresos.length > 0) {
+                ingresos.forEach(categoria => {
+                    $('#ingresos-grid').append(crearCardCategoria(categoria));
+                });
+                console.log('✅ Ingresos renderizados correctamente');
+            } else {
+                $('#ingresos-grid').html(crearMensajeVacio('ingresos'));
+                console.log('📭 No hay categorías de ingresos');
+            }
+        }
+
+        // Función para crear el HTML de cada card de categoría
+                function crearCardCategoria(categoria) {
+            console.log('🖼️ Creando card para:', categoria);
+
+            // Usar propiedades con fallback
+            const esActivo = categoria.activo !== undefined ? categoria.activo :
+                            categoria.Activo !== undefined ? categoria.Activo : true;
+
+            const color = categoria.color || categoria.Color || '#6c757d';
+            const icono = categoria.icono || categoria.Icono || 'bi bi-tag';
+            const nombre = categoria.nombre || categoria.Nombre || 'Sin nombre';
+            const descripcion = categoria.descripcion || categoria.Descripcion || '';
+            const tipo = categoria.tipo || categoria.Tipo || 'G';
+            const categoriaId = categoria.categoriaId || categoria.CategoriaId || 0;
+
+            // Clase CSS para inactivas
+            const claseInactiva = !esActivo ? 'inactiva' : '';
+
+            // Color más suave para inactivas
+            const colorFinal = !esActivo ? '#6c757d' : color;
+
+            return `
+                <div class="col">
+                    <div class="card categoria-card ${claseInactiva}"
+                         onclick="editarCategoria(${categoriaId})"
+                         style="cursor: pointer; border-left: 4px solid ${colorFinal}; height: 140px;">
+                        <div class="card-body text-center p-2">
+                            <div class="categoria-icono mb-2" style="color: ${colorFinal}; font-size: 1.5rem;">
+                                <i class="${icono}"></i>
+                            </div>
+                            <h6 class="card-title mb-1" style="font-size: 0.85rem; min-height: 20px;">
+                                ${nombre}
+                                ${!esActivo ? '<i class="bi bi-eye-slash text-muted ms-1" title="Categoría desactivada"></i>' : ''}
+                            </h6>
+                            ${descripcion ? `
+                                <p class="card-text text-muted small mb-2" style="font-size: 0.7rem; min-height: 30px; overflow: hidden;">
+                                    ${descripcion}
+                                </p>
+                            ` : '<div style="min-height: 30px;"></div>'}
+                            <div class="d-flex justify-content-center align-items-center">
+                                <span class="badge ${tipo === 'G' ? 'bg-danger' : 'bg-success'} me-1" style="font-size: 0.65rem;">
+                                    ${tipo === 'G' ? 'Gasto' : 'Ingreso'}
+                                </span>
+                                <span class="badge ${esActivo ? 'bg-success' : 'estado-inactivo'}" style="font-size: 0.65rem;">
+                                    ${esActivo ? 'Activo' : 'Inactivo'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function crearMensajeVacio(tipo) {
+            return `
+                <div class="col-12 text-center py-5">
+                    <div class="text-muted mb-3">
+                        <i class="bi bi-inbox display-6"></i>
+                        <p class="mt-2">No hay categorías de ${tipo} registradas</p>
+                    </div>
+                    <button class="btn btn-success btn-sm" onclick="mostrarFormNuevo('${tipo}')">
+                        <i class="bi bi-plus-circle me-1"></i> Agregar primera categoría
+                    </button>
+                </div>
+            `;
+        }
+
+        function mostrarMensajeSinDatos() {
+            const html = `
+                <div class="col-12 text-center py-5">
+                    <div class="text-muted">
+                        <i class="bi bi-database-exclamation display-6"></i>
+                        <p class="mt-2">No tienes categorías creadas</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="mostrarFormNuevo('Gasto')">
+                        <i class="bi bi-plus-circle me-1"></i> Crear primera categoría
+                    </button>
+                </div>
+            `;
+            $('#gastos-grid').html(html);
+            $('#ingresos-grid').html(html);
+        }
+
+                      // Función para editar una categoría existente - VERSIÓN CORREGIDA
+        async function editarCategoria(categoriaId) {
+            console.log('✏️ Editando categoría ID:', categoriaId);
+
+            try {
+                // Mostrar loading
+                toastr.info('Cargando categoría...');
+
+                // Obtener los datos de la categoría
+                const response = await $.ajax({
+                    url: `/Categoria/ObtenerJson/${categoriaId}`,
+                    type: 'GET'
+                });
+
+                console.log('📦 Datos de la categoría:', response);
+
+                // Llenar el formulario con los datos
+                $('#txtCategoriaId').val(response.categoriaId || response.CategoriaId);
+                $('#txtNombre').val(response.nombre || response.Nombre);
+                $('#txtDescripcion').val(response.descripcion || response.Descripcion);
+                $('#txtIcono').val(response.icono || response.Icono || 'bi bi-emoji-smile');
+                $('#txtColor').val(response.color || response.Color || '#10b981');
+                $('#chkActivo').prop('checked', response.activo !== undefined ? response.activo : response.Activo);
+
+                // Establecer el tipo
+                const tipo = response.tipo || response.Tipo;
+                if (tipo === 'G') {
+                    $('#radTipoGasto').prop('checked', true);
+                } else {
+                    $('#radTipoIngreso').prop('checked', true);
+                }
+
+                // Actualizar previews
+                actualizarPreviewIcono();
+                actualizarPreviewColor();
+
+                // Configurar modal para edición
+                $('#modalTitulo').text('Editar Categoría');
+                $('#btnGuardar').html('<i class="bi bi-check-circle me-1"></i> Actualizar');
+
+                // Mostrar botones de desactivar y eliminar
+                $('#btnDesactivar').removeClass('d-none');
+                $('#btnEliminar').removeClass('d-none');
+
+                // ✅ CORRECCIÓN: Configurar los botones con los datos de la categoría
+                configurarBotonesEdicion(response);
+
+                // Remover clases de validación
+                $('#formCategoria').removeClass('was-validated');
+
+                // Mostrar modal
+                if (!modalEdicion) {
+                    modalEdicion = new bootstrap.Modal('#modalEdicion');
+                }
+                modalEdicion.show();
+
+            } catch (error) {
+                console.error('❌ Error al cargar categoría:', error);
+                toastr.error('Error al cargar la categoría para editar');
+            }
+        }
+
+        // Función para configurar los botones de edición - MANTENER ESTA FUNCIÓN
+        function configurarBotonesEdicion(categoria) {
+            const categoriaId = categoria.categoriaId || categoria.CategoriaId;
+            const estaActivo = categoria.activo !== undefined ? categoria.activo : categoria.Activo;
+
+            // Configurar botón desactivar/activar
+            $('#btnDesactivar').off('click').on('click', function() {
+                cambiarEstadoCategoria(categoriaId, !estaActivo);
+            });
+
+            // Actualizar texto del botón desactivar
+            $('#btnDesactivar').html(
+                estaActivo ?
+                '<i class="bi bi-power me-1"></i> Desactivar' :
+                '<i class="bi bi-power me-1"></i> Activar'
+            );
+
+            // Configurar botón eliminar
+            $('#btnEliminar').off('click').on('click', function() {
+                eliminarCategoria(categoriaId);
+            });
+        }
+
+        // Cargar categorías cuando el documento esté listo
+        $(document).ready(function () {
+            console.log('🚀 Documento listo, iniciando aplicación...');
+            console.log('📍 URL de la API: /Categoria/Lista');
+
+            // Verificar que los contenedores existan
+            if ($('#gastos-grid').length && $('#ingresos-grid').length) {
+                console.log('✅ Contenedores encontrados');
+                cargarCategorias();
+            } else {
+                console.error('❌ No se encontraron los contenedores de grids');
+            }
+
+            // Forzar recarga para pruebas
+            setTimeout(() => {
+                console.log('🕒 Recarga automática después de 2 segundos...');
+                // cargarCategorias();
+            }, 2000);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,723 @@
+/* ===== ESTILOS BASE Y CONFIGURACIÓN GENERAL ===== */
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+body {
+    margin-bottom: 0;
+    background: #f8fafc;
+    color: #1f2937;
+    padding-top: 0;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* ===== ESTILOS PARA BOTONES ===== */
+.btn {
+    transition: all 0.3s ease;
+}
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+.btn-outline-secondary {
+    border-color: rgba(0,0,0,0.08);
+    color: #495057;
+    background: rgba(255,255,255,0.02);
+}
+
+/* Botones grandes debajo del saldo */
+.action-buttons-saldo .btn {
+    width: 72px;
+    height: 72px;
+    border-radius: 14px;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 22px rgba(15,23,42,0.08);
+    border: none;
+}
+
+.btn-inc {
+    background: linear-gradient(180deg,#ecfdf5,#d1fae5);
+    color: #047857;
+}
+
+.btn-dec {
+    background: linear-gradient(180deg,#fff1f2,#fee2e2);
+    color: #b91c1c;
+}
+
+    .btn-inc:hover, .btn-dec:hover {
+        transform: translateY(-3px);
+    }
+
+.btn-mov-label {
+    display: block;
+    font-size: 0.7rem;
+    margin-top: 6px;
+    color: #374151;
+}
+
+/* Botones pequeños para acciones */
+.btn-editar, .btn-eliminar {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* ===== ESTILOS PARA TARJETAS ===== */
+.card {
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+.summary-card, .saldo-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 14px;
+    padding: 1.25rem 0;
+    background: linear-gradient(180deg,#ffffff,#f1f5f9);
+    text-align: center;
+}
+
+.card-surface {
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+
+/* ===== ESTILOS PARA CATEGORÍAS ===== */
+.categoria-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.05);
+    padding-bottom: 10px;
+    min-height: 170px;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    cursor: pointer;
+}
+
+    .categoria-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .categoria-card .card {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        width: 100%;
+    }
+
+    .categoria-card .rounded-circle {
+        width: 88px !important;
+        height: 88px !important;
+        border-radius: 50%;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        font-size: 1.2rem;
+    }
+
+    .categoria-card .card-title {
+        font-weight: 600;
+        margin-top: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #212529;
+    }
+
+    .categoria-card .card-text {
+        color: #6c757d;
+        margin-bottom: 12px;
+    }
+
+    .categoria-card.border-primary {
+        outline: 3px solid rgba(0,123,255,0.08);
+        border-radius: 12px;
+    }
+
+.categoria-label {
+    font-size: 0.8rem;
+    margin-top: 6px;
+    color: #111827;
+}
+
+/* ===== ESTILOS PARA NAVEGACIÓN Y PESTAÑAS ===== */
+.nav-tabs .nav-link {
+    transition: all 0.3s ease;
+    color: #495057;
+    background: transparent;
+    border: 0;
+    padding: 10px 18px;
+    margin-right: 6px;
+    border-radius: 10px;
+}
+
+    .nav-tabs .nav-link:hover {
+        transform: translateY(-2px);
+    }
+
+    .nav-tabs .nav-link.active {
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        transform: translateY(-2px);
+    }
+
+/* ===== ESTILOS PARA MODALES ===== */
+.modal {
+    z-index: 1060;
+}
+
+.modal-content {
+    background: #fff;
+    color: #212529;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+.modal.fade .modal-dialog {
+    transform: translateY(-8px) scale(0.96);
+    transform-origin: center center;
+    opacity: 0;
+    transition: transform .22s cubic-bezier(.2,.8,.2,1), opacity .18s ease;
+    will-change: transform, opacity;
+}
+
+.modal.show .modal-dialog {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.modal-backdrop {
+    transition: opacity .22s linear !important;
+    z-index: 1050;
+}
+
+/* ===== ESTILOS PARA FORMULARIOS ===== */
+.form-label {
+    color: #495057;
+    font-weight: 600;
+}
+
+.required-field::after {
+    content: " *";
+    color: #e53935;
+}
+
+/* ===== ESTILOS PARA ELEMENTOS DE INTERFAZ ===== */
+.icon-saldo {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2ff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+    margin: 0 auto;
+}
+
+.cat-icon-badge {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+    .cat-icon-badge.small {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        font-size: 0.9rem;
+    }
+
+.cat-cell {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: .625rem;
+}
+
+.icono-seleccionado-preview {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    background-color: rgba(0,0,0,0.03);
+    border-radius: 50%;
+    color: #495057;
+}
+
+.color-seleccionado-preview {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: white;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+}
+
+/* ===== ESTILOS PARA GRILLAS ===== */
+#gridIconos .col, #gridColores .col {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+    #gridIconos .col:hover, #gridColores .col:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        background: rgba(0,0,0,0.02);
+    }
+
+#gridIconos i {
+    font-size: 1.75rem;
+}
+
+/* ===== ESTILOS PARA TABLAS ===== */
+.table th {
+    font-weight: 600;
+    color: #374151;
+    border-top: none;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.table td, .table th {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+.table .btn {
+    margin: 2px;
+}
+
+.table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.list-group-item {
+    border: 0;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.card-header {
+    background: transparent;
+}
+
+/* ===== ESTILOS PARA BADGES ===== */
+.mov-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+    .mov-type-badge.income {
+        background: #ecfdf5;
+        color: #065f46;
+    }
+
+    .mov-type-badge.expense {
+        background: #fff1f2;
+        color: #7f1d1d;
+    }
+
+/* ===== ESTILOS PARA GRÁFICOS ===== */
+.chart-area {
+    width: 100%;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .chart-area canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        max-width: 100%;
+        image-rendering: optimizeQuality;
+    }
+
+/* ===== CLASES UTILITARIAS ===== */
+.section-title {
+    font-weight: 600;
+    color: #343a40;
+}
+
+.container-fluid {
+    max-width: 1200px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.bi {
+    vertical-align: -.125em;
+}
+
+/* ===== AJUSTES ESPECÍFICOS PARA EL NUEVO SIDEBAR ===== */
+.main-content {
+    padding-top: 20px;
+}
+
+.content-header h2 {
+    margin-top: 0;
+}
+
+/* ===== FUNCIONALIDAD DE CALENDARIO ===== */
+.date-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.date-arrow {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #0d6efd;
+    padding: 5px 10px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+    .date-arrow:hover {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+
+.date-display {
+    margin: 0 15px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+
+    .date-display:hover {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+
+.calendar-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.calendar-popup {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    padding: 15px;
+    z-index: 1040;
+    margin-top: 5px;
+    display: none;
+    width: 280px;
+}
+
+    .calendar-popup.show {
+        display: block;
+        animation: fadeIn 0.2s ease;
+    }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+    .calendar-day:hover {
+        background-color: #e9ecef;
+    }
+
+    .calendar-day.selected {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .calendar-day.other-month {
+        color: #adb5bd;
+    }
+
+.calendar-weekday {
+    font-weight: bold;
+    text-align: center;
+    font-size: 0.8rem;
+    padding: 5px 0;
+    color: #6c757d;
+}
+
+.calendar-title {
+    font-weight: 600;
+    margin: 0 10px;
+    min-width: 150px;
+    text-align: center;
+}
+
+/* ===== MEDIA QUERIES ===== */
+@media (max-width: 576px) {
+    .categoria-card {
+        min-height: 150px;
+    }
+
+        .categoria-card .rounded-circle {
+            width: 70px !important;
+            height: 70px !important;
+        }
+
+    .action-buttons-saldo .btn {
+        width: 56px;
+        height: 56px;
+        font-size: 1.2rem;
+    }
+
+    .display-6 {
+        font-size: 1.8rem;
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .main-content {
+        padding: 15px;
+    }
+
+    .content-header {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0 !important;
+        width: 100%;
+        padding: 15px;
+    }
+
+    .container-fluid {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+/* ==================== ESTILOS MEJORADOS PARA CUENTAS ==================== */
+
+/* Contenedor principal del selector de cuenta */
+.account-selector-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.account-selector-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+    .account-selector-label i {
+        color: #0d6efd;
+        font-size: 1.1rem;
+    }
+
+/* Selector de cuenta mejorado */
+.account-selector {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+    .account-selector:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        transform: translateY(-1px);
+    }
+
+/* Información de la cuenta */
+.account-info {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    position: relative;
+    overflow: hidden;
+}
+
+    .account-info::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #0d6efd, #6f42c1);
+    }
+
+.account-balance {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #198754;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #198754, #20c997);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.account-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.25rem;
+}
+
+.account-type {
+    font-size: 0.85rem;
+    color: #6c757d;
+    background: rgba(108, 117, 125, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+/* Tarjetas de resumen mejoradas */
+.summary-card {
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+    .summary-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #198754, #20c997);
+    }
+
+    .summary-card:last-child::before {
+        background: linear-gradient(90deg, #dc3545, #e35d6a);
+    }
+
+    .summary-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .summary-card .card-body {
+        padding: 1.5rem 1rem;
+    }
+
+    .summary-card small {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+
+    .summary-card h5 {
+        font-weight: 700;
+        font-size: 1.4rem;
+    }

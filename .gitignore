@@ -1,0 +1,23 @@
+# Visual Studio and .NET generated files
+.vs/
+**/bin/
+**/obj/
+*.user
+*.suo
+
+# Local configuration and secrets
+.env
+.env.*
+!*.example
+appsettings.Local.json
+appsettings.*.Local.json
+
+# Local database and IDE files
+*.db
+*.sqlite
+*.sqlite3
+*.pdb
+
+# OS files
+.DS_Store
+Thumbs.db

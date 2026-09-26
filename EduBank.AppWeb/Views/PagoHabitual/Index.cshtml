@@ -1,0 +1,801 @@
+﻿<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+<!-- JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+@model IEnumerable<EduBank.Models.PagosHabituales>
+@{
+    ViewData["Title"] = "Pagos Habituales";
+    var cuentas = ViewBag.Cuentas as List<EduBank.Models.Cuenta>;
+    var categorias = ViewBag.Categorias as List<EduBank.Models.Categoria>;
+    var pagos = Model?.ToList() ?? new List<EduBank.Models.PagosHabituales>();
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Pagos Habituales</h1>
+            <p class="text-muted">Gestiona tus pagos recurrentes y automatizados</p>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPagoHabitual">
+            <i class="fas fa-plus-circle mr-2"></i>Nuevo Pago Habitual
+        </button>
+    </div>
+
+    <!-- Estadísticas Rápidas -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Próximos Pagos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="contadorProximos">
+                                @pagos.Count(p => p.FechaInicio.Date >= DateTime.Today && p.EsActivo)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Próximos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalProximos">
+                                S/ @pagos.Where(p => p.FechaInicio.Date >= DateTime.Today && p.EsActivo).Sum(p => p.Monto).ToString("N2")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Activos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="contadorActivos">
+                                @pagos.Count(p => p.EsActivo)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-play-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Automáticos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="contadorAutomaticos">
+                                @pagos.Count(p => p.AgregarAutomaticamente && p.EsActivo)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-robot fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Pagos Habituales -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Lista de Pagos Habituales</h6>
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="tablaPagos" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Monto</th>
+                            <th>Frecuencia</th>
+                            <th>Próxima Ejecución</th>
+                            <th>Cuenta</th>
+                            <th>Estado</th>
+                            <th>Automático</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!pagos.Any())
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="fas fa-receipt fa-3x mb-3"></i>
+                                        <h5>No hay pagos habituales registrados</h5>
+                                        <p class="mb-0">Comienza agregando tu primer pago habitual</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var pago in pagos)
+                            {
+                                <tr id="pago-@pago.PagoHabitualId">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="mr-3">
+                                                <i class="fas fa-calendar-check text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <strong>@pago.Nombre</strong>
+                                                @if (!string.IsNullOrEmpty(pago.Comentario))
+                                                {
+                                                    <br>
+                                                    <small class="text-muted">@pago.Comentario</small>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="font-weight-bold text-danger">
+                                        S/ @pago.Monto.ToString("N2")
+                                    </td>
+                                    <td>
+                                        @{
+                                            var unidadTexto = pago.UnidadFrecuencia switch
+                                            {
+                                                "D" => "día(s)",
+                                                "S" => "semana(s)",
+                                                "M" => "mes(es)",
+                                                _ => pago.UnidadFrecuencia
+                                            };
+                                        }
+                                        Cada @pago.Frecuencia @unidadTexto
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            @if (pago.FechaInicio.Date == DateTime.Today)
+                                            {
+                                                <span class="badge bg-warning mr-2">Hoy</span>
+                                            }
+                                            else if (pago.FechaInicio.Date < DateTime.Today)
+                                            {
+                                                <span class="badge bg-danger mr-2">Vencido</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success mr-2">Próximo</span>
+                                            }
+                                            @pago.FechaInicio.ToString("dd/MM/yyyy")
+                                            @if (pago.Hora.HasValue)
+                                            {
+                                                <br>
+                                                <small class="text-muted">@pago.Hora.Value.ToString(@"hh\:mm")</small>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light border text-dark">
+                                            <i class="fas fa-wallet mr-1"></i>@pago.Cuenta?.Nombre
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (pago.EsActivo)
+                                        {
+                                            <span class="badge bg-success estado-pago">Activo</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary estado-pago">Inactivo</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (pago.AgregarAutomaticamente)
+                                        {
+                                            <span class="badge bg-info automatico-pago">Sí</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-dark automatico-pago">No</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            @if (pago.EsActivo && pago.FechaInicio.Date <= DateTime.Today)
+                                            {
+                                                <button type="button" class="btn btn-outline-success"
+                                                        onclick="ejecutarPago(@pago.PagoHabitualId, '@pago.Nombre')"
+                                                        title="Ejecutar Pago">
+                                                    <i class="fas fa-play"></i>
+                                                </button>
+                                            }
+
+                                            <button type="button" class="btn btn-outline-primary"
+                                                    onclick="editarPago(@pago.PagoHabitualId)"
+                                                    title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+
+                                            @if (pago.EsActivo)
+                                            {
+                                                <button type="button" class="btn btn-outline-warning"
+                                                        onclick="cambiarEstado(@pago.PagoHabitualId, false, '@pago.Nombre')"
+                                                        title="Pausar">
+                                                    <i class="fas fa-pause"></i>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-outline-success"
+                                                        onclick="cambiarEstado(@pago.PagoHabitualId, true, '@pago.Nombre')"
+                                                        title="Activar">
+                                                    <i class="fas fa-play"></i>
+                                                </button>
+                                            }
+
+                                            <button type="button" class="btn btn-outline-danger"
+                                                    onclick="eliminarPago(@pago.PagoHabitualId, '@pago.Nombre')"
+                                                    title="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Agregar/Editar Pago Habitual -->
+<div class="modal fade" id="modalPagoHabitual" tabindex="-1" aria-labelledby="modalPagoHabitualLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPagoHabitualLabel">Nuevo Pago Habitual</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formPagoHabitual">
+                <div class="modal-body">
+                    <input type="hidden" id="PagoHabitualId" name="PagoHabitualId" value="0" />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="Nombre" class="form-label">Nombre del Pago *</label>
+                                <input type="text" class="form-control" id="Nombre" name="Nombre" required maxlength="100"
+                                       placeholder="Ej: Alquiler, Netflix, Gimnasio">
+                                <div class="invalid-feedback">Por favor ingresa un nombre para el pago.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="Monto" class="form-label">Monto *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">S/</span>
+                                    <input type="number" class="form-control" id="Monto" name="Monto" step="0.01" min="0.01" required
+                                           placeholder="0.00">
+                                </div>
+                                <div class="invalid-feedback">El monto debe ser mayor a 0.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="Frecuencia" class="form-label">Frecuencia *</label>
+                                <input type="number" class="form-control" id="Frecuencia" name="Frecuencia" min="1" max="365" required value="1">
+                                <div class="form-text">Cada cuánto se repite</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="UnidadFrecuencia" class="form-label">Período *</label>
+                                <select class="form-select" id="UnidadFrecuencia" name="UnidadFrecuencia" required>
+                                    <option value="D">Días</option>
+                                    <option value="S">Semanas</option>
+                                    <option value="M">Meses</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="Hora" class="form-label">Hora (Opcional)</label>
+                                <input type="time" class="form-control" id="Hora" name="Hora">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="FechaInicio" class="form-label">Fecha de Inicio *</label>
+                                <input type="date" class="form-control" id="FechaInicio" name="FechaInicio" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="FechaFin" class="form-label">Fecha de Fin (Opcional)</label>
+                                <input type="date" class="form-control" id="FechaFin" name="FechaFin">
+                                <div class="form-text">Dejar vacío si no tiene fecha de fin</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="CuentaId" class="form-label">Cuenta *</label>
+                                <select class="form-select" id="CuentaId" name="CuentaId" required>
+                                    <option value="">Seleccionar Cuenta</option>
+                                    @if (cuentas != null)
+                                    {
+                                        foreach (var cuenta in cuentas)
+                                        {
+                                            <option value="@cuenta.CuentaId">@cuenta.Nombre - S/ @cuenta.Saldo.ToString("N2")</option>
+                                        }
+                                    }
+                                </select>
+                                <div class="invalid-feedback">Por favor selecciona una cuenta.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="CategoriaId" class="form-label">Categoría *</label>
+                                <select class="form-select" id="CategoriaId" name="CategoriaId" required>
+                                    <option value="">Seleccionar Categoría</option>
+                                    @if (categorias != null)
+                                    {
+                                        foreach (var categoria in categorias)
+                                        {
+                                            <option value="@categoria.CategoriaId">
+                                                @categoria.Nombre
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                                <div class="invalid-feedback">Por favor selecciona una categoría.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Comentario" class="form-label">Comentario (Opcional)</label>
+                        <textarea class="form-control" id="Comentario" name="Comentario" rows="2" maxlength="500"
+                                  placeholder="Descripción adicional del pago..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="EsActivo" name="EsActivo" checked>
+                                <label class="form-check-label" for="EsActivo">
+                                    Pago Activo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="AgregarAutomaticamente" name="AgregarAutomaticamente">
+                                <label class="form-check-label" for="AgregarAutomaticamente">
+                                    Agregar Automáticamente
+                                </label>
+                                <div class="form-text">El sistema registrará el movimiento automáticamente</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardar">
+                        <i class="fas fa-save me-1"></i>Guardar Pago
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="confirmacionMensaje">
+                <!-- Mensaje dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmarAccion">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Configuración global de Toastr
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        // Variables globales para los modales
+        let modalPagoHabitual;
+        let modalConfirmacion;
+
+        // Cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inicializar modales de Bootstrap 5
+            modalPagoHabitual = new bootstrap.Modal(document.getElementById('modalPagoHabitual'));
+            modalConfirmacion = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
+
+            // Configurar fecha mínima para fecha de inicio (hoy)
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('FechaInicio').value = hoy;
+            document.getElementById('FechaInicio').min = hoy;
+
+            // Configurar el formulario
+            document.getElementById('formPagoHabitual').addEventListener('submit', guardarPago);
+
+            // Configurar modal para resetear al cerrar
+            document.getElementById('modalPagoHabitual').addEventListener('hidden.bs.modal', function () {
+                resetForm();
+            });
+        });
+
+        // Función para guardar pago (crear o actualizar)
+                // Función para guardar pago (crear o actualizar) - VERSIÓN CORREGIDA
+        async function guardarPago(e) {
+            e.preventDefault();
+
+            const form = e.target;
+
+            // ✅ CORRECCIÓN: Convertir PagoHabitualId a número
+            const pagoHabitualId = parseInt(document.getElementById('PagoHabitualId').value) || 0;
+
+            const formData = {
+                PagoHabitualId: pagoHabitualId, // ✅ Ahora es número, no string
+                Nombre: document.getElementById('Nombre').value,
+                Frecuencia: parseInt(document.getElementById('Frecuencia').value) || 1,
+                UnidadFrecuencia: document.getElementById('UnidadFrecuencia').value,
+                FechaInicio: document.getElementById('FechaInicio').value,
+                Hora: document.getElementById('Hora').value || null,
+                FechaFin: document.getElementById('FechaFin').value || null,
+                CuentaId: parseInt(document.getElementById('CuentaId').value),
+                CategoriaId: parseInt(document.getElementById('CategoriaId').value),
+                Monto: parseFloat(document.getElementById('Monto').value) || 0,
+                Comentario: document.getElementById('Comentario').value,
+                EsActivo: document.getElementById('EsActivo').checked,
+                AgregarAutomaticamente: document.getElementById('AgregarAutomaticamente').checked
+            };
+
+            console.log('📤 Datos a enviar:', formData);
+            console.log('🔍 PagoHabitualId:', formData.PagoHabitualId, 'Tipo:', typeof formData.PagoHabitualId);
+
+            // Validación básica
+            if (!formData.Nombre || !formData.Monto || !formData.CuentaId || !formData.CategoriaId) {
+                mostrarMensaje('Por favor complete todos los campos obligatorios.', 'warning');
+                return;
+            }
+
+            // ✅ CORRECCIÓN: Verificar bien si es crear o editar
+            const url = formData.PagoHabitualId > 0 ?
+                '/PagoHabitual/Actualizar' :
+                '/PagoHabitual/Insertar';
+
+            console.log('🌐 URL de envío:', url);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                console.log('📥 Respuesta del servidor:', result);
+
+                if (result.success) {
+                    modalPagoHabitual.hide();
+                    mostrarMensaje(result.message, 'success');
+                    // Recargar la página para ver los cambios
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    mostrarMensaje(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('Error al procesar la solicitud: ' + error.message, 'error');
+            }
+        }
+
+        // FUNCIÓN EDITAR PAGO - VERSIÓN DEPURADA Y CORREGIDA
+               // FUNCIÓN EDITAR PAGO - CON MÁS DEBUGGING
+                // FUNCIÓN EDITAR PAGO CORREGIDA - USAR camelCase
+        async function editarPago(id) {
+            try {
+                console.log('🔍 Iniciando edición del pago ID:', id);
+
+                const response = await fetch(`/PagoHabitual/ObtenerJson?id=${id}`);
+                const result = await response.json();
+
+                console.log('📦 Respuesta del servidor:', result);
+
+                if (result.success && result.data) {
+                    const pago = result.data;
+                    console.log('📋 Datos del pago recibidos:', pago);
+
+                    // ✅ CORRECCIÓN: Usar camelCase (minúsculas) para las propiedades
+                    console.log('🔎 Verificando campos con camelCase:');
+                    console.log('- pagoHabitualId:', pago.pagoHabitualId);
+                    console.log('- nombre:', pago.nombre);
+                    console.log('- frecuencia:', pago.frecuencia);
+                    console.log('- unidadFrecuencia:', pago.unidadFrecuencia);
+
+                    // ✅ ASIGNACIÓN CORRECTA CON camelCase
+                    document.getElementById('PagoHabitualId').value = pago.pagoHabitualId || '0';
+                    document.getElementById('Nombre').value = pago.nombre || '';
+                    document.getElementById('Frecuencia').value = pago.frecuencia || 1;
+                    document.getElementById('UnidadFrecuencia').value = pago.unidadFrecuencia || 'D';
+
+                    // ✅ FECHA INICIO
+                    if (pago.fechaInicio) {
+                        const fechaInicio = new Date(pago.fechaInicio);
+                        document.getElementById('FechaInicio').value = fechaInicio.toISOString().split('T')[0];
+                    }
+
+                    // ✅ HORA
+                    if (pago.hora) {
+                        document.getElementById('Hora').value = pago.hora;
+                    }
+
+                    // ✅ FECHA FIN
+                    if (pago.fechaFin) {
+                        const fechaFin = new Date(pago.fechaFin);
+                        document.getElementById('FechaFin').value = fechaFin.toISOString().split('T')[0];
+                    }
+
+                    // ✅ CUENTA Y CATEGORÍA
+                    document.getElementById('CuentaId').value = pago.cuentaId || '';
+                    document.getElementById('CategoriaId').value = pago.categoriaId || '';
+
+                    // ✅ MONTO
+                    document.getElementById('Monto').value = pago.monto || '0.00';
+
+                    // ✅ COMENTARIO
+                    document.getElementById('Comentario').value = pago.comentario || '';
+
+                    // ✅ CHECKBOXES
+                    document.getElementById('EsActivo').checked = Boolean(pago.esActivo);
+                    document.getElementById('AgregarAutomaticamente').checked = Boolean(pago.agregarAutomaticamente);
+
+                    // ✅ VERIFICACIÓN FINAL
+                    console.log('🎯 Verificación final de campos asignados:');
+                    console.log('- PagoHabitualId en hidden:', document.getElementById('PagoHabitualId').value);
+                    console.log('- Nombre en input:', document.getElementById('Nombre').value);
+                    console.log('- Monto en input:', document.getElementById('Monto').value);
+                    console.log('- CuentaId seleccionada:', document.getElementById('CuentaId').value);
+                    console.log('- CategoriaId seleccionada:', document.getElementById('CategoriaId').value);
+
+                    // Actualizar título del modal
+                    document.getElementById('modalPagoHabitualLabel').textContent = 'Editar Pago Habitual';
+
+                    // Mostrar modal
+                    console.log('🚀 Mostrando modal de edición...');
+                    const modal = new bootstrap.Modal(document.getElementById('modalPagoHabitual'));
+                    modal.show();
+
+                    console.log('✅ Modal abierto exitosamente');
+
+                } else {
+                    console.error('❌ Error: No se recibieron datos válidos del servidor');
+                    mostrarMensaje(result.message || 'Error al cargar los datos del pago', 'error');
+                }
+            } catch (error) {
+                console.error('💥 Error crítico al cargar pago:', error);
+                mostrarMensaje('Error al cargar el pago: ' + error.message, 'error');
+            }
+        }
+
+        // Función para eliminar pago
+        function eliminarPago(id, nombre) {
+            document.getElementById('confirmacionMensaje').innerHTML =
+                `¿Estás seguro de que deseas eliminar el pago habitual <strong>"${nombre}"</strong>? Esta acción no se puede deshacer.`;
+
+            document.getElementById('btnConfirmarAccion').onclick = async function() {
+                try {
+                    const response = await fetch('/PagoHabitual/Eliminar', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'id=' + id
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        modalConfirmacion.hide();
+                        mostrarMensaje(result.message, 'success');
+                        // Eliminar la fila de la tabla sin recargar
+                        document.getElementById('pago-' + id)?.remove();
+                        actualizarEstadisticas();
+                    } else {
+                        mostrarMensaje(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    mostrarMensaje('Error al eliminar el pago: ' + error.message, 'error');
+                }
+            };
+
+            modalConfirmacion.show();
+        }
+
+        // Función para cambiar estado
+        function cambiarEstado(id, activo, nombre) {
+            const accion = activo ? 'activar' : 'pausar';
+            document.getElementById('confirmacionMensaje').innerHTML =
+                `¿Estás seguro de que deseas ${accion} el pago habitual <strong>"${nombre}"</strong>?`;
+
+            document.getElementById('btnConfirmarAccion').onclick = async function() {
+                try {
+                    const response = await fetch('/PagoHabitual/CambiarEstado', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ PagoHabitualId: id, Activo: activo })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        modalConfirmacion.hide();
+                        mostrarMensaje(result.message, 'success');
+                        // Recargar para ver cambios
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        mostrarMensaje(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    mostrarMensaje('Error al cambiar estado: ' + error.message, 'error');
+                }
+            };
+
+            modalConfirmacion.show();
+        }
+
+        // Función para ejecutar pago manualmente
+        function ejecutarPago(id, nombre) {
+            document.getElementById('confirmacionMensaje').innerHTML =
+                `¿Estás seguro de que deseas ejecutar el pago <strong>"${nombre}"</strong> manualmente?`;
+
+            document.getElementById('btnConfirmarAccion').onclick = async function() {
+                try {
+                    const response = await fetch('/PagoHabitual/EjecutarPagoManual', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'id=' + id
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        modalConfirmacion.hide();
+                        mostrarMensaje(result.message, 'success');
+                    // Pequeña actualización sin recargar toda la página
+                        actualizarEstadisticas();
+                    } else {
+                        mostrarMensaje(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    mostrarMensaje('Error al ejecutar pago: ' + error.message, 'error');
+                }
+            };
+
+            modalConfirmacion.show();
+        }
+
+        // Función para resetear el formulario
+        function resetForm() {
+            document.getElementById('formPagoHabitual').reset();
+            document.getElementById('PagoHabitualId').value = '0';
+            document.getElementById('modalPagoHabitualLabel').textContent = 'Nuevo Pago Habitual';
+
+            // Restablecer fecha mínima
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('FechaInicio').value = hoy;
+        }
+
+        // Función para actualizar estadísticas (sin recargar)
+        function actualizarEstadisticas() {
+            // Esta función podría actualizar las estadísticas via AJAX
+            // Por ahora simplemente recargamos
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        }
+
+        // FUNCIÓN MODIFICADA: Mostrar mensajes con Toastr
+        function mostrarMensaje(mensaje, tipo) {
+            switch (tipo) {
+                case 'success':
+                    toastr.success(mensaje, 'Éxito');
+                    break;
+                case 'error':
+                    toastr.error(mensaje, 'Error');
+                    break;
+                case 'warning':
+                    toastr.warning(mensaje, 'Advertencia');
+                    break;
+                case 'info':
+                    toastr.info(mensaje, 'Información');
+                    break;
+                default:
+                    toastr.info(mensaje, 'Mensaje');
+            }
+        }
+    </script>
+}

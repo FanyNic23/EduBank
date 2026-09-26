@@ -1,0 +1,9 @@
+.git
+.vs
+**/bin
+**/obj
+*.user
+*.suo
+*.pdb
+README.md
+Scripts

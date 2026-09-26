@@ -110,7 +110,7 @@ resource acrPullRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(acr.id, app.id, 'AcrPull')
   scope: acr
   properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f9519a8-6b7b-4f11-a4f0-6b0c3aaf4f68')
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
     principalId: app.identity.principalId
     principalType: 'ServicePrincipal'
   }
